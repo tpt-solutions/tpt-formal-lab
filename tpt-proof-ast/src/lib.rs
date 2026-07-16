@@ -4,7 +4,7 @@
 //!
 //! `tpt-proof-ast` provides an Abstract Syntax Tree (AST) framework where
 //! every node carries its **kind** — Proposition, Term, or Type — encoded
-//! in the Rust type system via [`PhantomData`] markers and const generics.
+//! in the Rust type system via `PhantomData` markers and const generics.
 //! You cannot accidentally attach a `Term` where a `Formula` (proposition) is
 //! expected: the compiler rejects it.
 //!

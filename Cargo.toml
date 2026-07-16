@@ -25,7 +25,6 @@ num-integer = { version = "0.1", default-features = false }
 proc-macro2 = "1"
 syn = { version = "2", features = ["full"] }
 quote = "1"
-rustc-hash = { version = "2", default-features = false }
 
 # Workspace crates
 tpt-exact-math = { path = "tpt-exact-math", version = "0.1.0" }

@@ -156,6 +156,7 @@ impl<const DENOM: i64> Mul for FixedPoint<DENOM> {
     type Output = Self;
     /// Multiplies two fixed-point values: `(a/D) * (b/D) = (a*b) / D²`,
     /// then rescales back to `/ D` by dividing the raw product by `DENOM`.
+    #[allow(clippy::suspicious_arithmetic_impl)] // rescaling division is correct fixed-point math, not a bug
     fn mul(self, rhs: Self) -> Self {
         let prod = self.raw.checked_mul(rhs.raw).expect("FixedPoint multiplication overflow");
         Self { raw: prod / DENOM }

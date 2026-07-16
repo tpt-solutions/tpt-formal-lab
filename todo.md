@@ -85,8 +85,8 @@
 
 ### Tests
 - [x] 5 doc-tests covering all four macros
-- [ ] Integration tests: panic-on-violation in debug (add `tests/contracts.rs`)
-- [ ] Integration tests: zero-cost in release (`cargo test --release`)
+- [x] Integration tests: panic-on-violation in debug (add `tests/contracts.rs`)
+- [x] Integration tests: zero-cost in release (`cargo test --release`)
 
 ---
 
@@ -166,14 +166,14 @@
 
 ## Phase 9 — Final Publish Checklist
 
-- [ ] `cargo test --workspace` — all green
-- [ ] `cargo clippy --workspace -- -D warnings` — zero warnings
-- [ ] `cargo doc --workspace --no-deps` — zero missing docs
-- [ ] `cargo publish --dry-run -p tpt-exact-math`
-- [ ] `cargo publish --dry-run -p tpt-proof-ast`
-- [ ] `cargo publish --dry-run -p tpt-verify-macros`
-- [ ] `cargo publish --dry-run -p tpt-deterministic-sim`
-- [ ] `cargo publish --dry-run -p tpt-smt-bridge`
+- [x] `cargo test --workspace` — all green
+- [x] `cargo clippy --workspace -- -D warnings` — zero warnings
+- [x] `cargo doc --workspace --no-deps` — zero missing docs
+- [x] `cargo publish --dry-run -p tpt-exact-math`
+- [x] `cargo publish --dry-run -p tpt-proof-ast`
+- [x] `cargo publish --dry-run -p tpt-verify-macros`
+- [ ] `cargo publish --dry-run -p tpt-deterministic-sim` — packaging succeeds; the registry-lookup step for its `tpt-exact-math` dependency can only be verified for real once `tpt-exact-math` is actually published (dry-run can't see unpublished sibling crates)
+- [x] `cargo publish --dry-run -p tpt-smt-bridge`
 - [ ] Tag git commit `v0.1.0`
 - [ ] `cargo publish -p tpt-exact-math` → wait for index
 - [ ] `cargo publish -p tpt-proof-ast` → wait for index

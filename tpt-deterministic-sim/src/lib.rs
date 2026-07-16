@@ -53,4 +53,4 @@ mod fixed_point;
 mod sim;
 
 pub use fixed_point::FixedPoint;
-pub use sim::DeterministicSim;
+pub use sim::{DeterministicSim, EntityId};

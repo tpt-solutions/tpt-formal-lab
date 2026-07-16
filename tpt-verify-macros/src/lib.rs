@@ -63,7 +63,7 @@ use syn::{parse_macro_input, ItemFn};
 /// In debug builds, the condition is checked via `debug_assert!` at the top of
 /// the function body. In release builds it is a no-op.
 ///
-/// A structured doc comment `**Requires:** \`<condition>\`` is always emitted.
+/// A structured doc comment in the form `**Requires:** <condition>` is always emitted.
 ///
 /// # Example
 ///
@@ -116,7 +116,7 @@ pub fn requires(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// expression.  In debug builds the condition is checked via `debug_assert!`
 /// before the value is returned. In release builds it is a no-op.
 ///
-/// A structured doc comment `**Ensures:** \`<condition>\`` is always emitted.
+/// A structured doc comment in the form `**Ensures:** <condition>` is always emitted.
 ///
 /// # Example
 ///
@@ -164,7 +164,7 @@ pub fn ensures(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// in debug builds. This is useful for documenting and enforcing struct or
 /// loop invariants expressed as function-level assertions.
 ///
-/// A structured doc comment `**Invariant:** \`<condition>\`` is always emitted.
+/// A structured doc comment in the form `**Invariant:** <condition>` is always emitted.
 ///
 /// # Example
 ///

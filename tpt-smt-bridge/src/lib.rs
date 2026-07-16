@@ -63,7 +63,7 @@ mod smtlib2;
 mod solver;
 mod sort;
 
-pub use counter_example::CounterExample;
+pub use counter_example::{CeValue, CounterExample};
 pub use expr::Expr;
 pub use smtlib2::emit_smtlib2;
 pub use solver::SmtSolver;

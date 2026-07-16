@@ -9,6 +9,8 @@ use std::collections::BTreeMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct EntityId(u64);
 
+type SystemFn<S> = Box<dyn Fn(&mut BTreeMap<EntityId, S>)>;
+
 /// A step-based, bitwise-deterministic simulation.
 ///
 /// `DeterministicSim<S>` stores a collection of entities, each with a state
@@ -48,7 +50,7 @@ pub struct EntityId(u64);
 /// ```
 pub struct DeterministicSim<S: Clone + std::fmt::Debug> {
     entities: BTreeMap<EntityId, S>,
-    systems: BTreeMap<String, Box<dyn Fn(&mut BTreeMap<EntityId, S>)>>,
+    systems: BTreeMap<String, SystemFn<S>>,
     next_id: u64,
     step_count: u64,
 }

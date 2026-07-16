@@ -21,6 +21,7 @@ fn broken_abs(x: i32) -> i32 {
 
 struct Counter {
     value: u32,
+    #[allow(dead_code)] // only read via the `invariant` debug_assert, compiled out in release
     max: u32,
 }
 
@@ -66,7 +67,9 @@ mod debug_behavior {
     #[test]
     #[should_panic(expected = "Invariant violated")]
     fn invariant_panics_on_violation() {
-        let mut c = Counter { value: 5, max: 5 };
+        // Invariant is checked at function entry, so the violation must
+        // already hold before the call.
+        let mut c = Counter { value: 6, max: 5 };
         c.increment_unchecked();
     }
 }
@@ -82,8 +85,8 @@ mod release_behavior {
         assert_eq!(positive_only(-1), -2);
         assert_eq!(broken_abs(-3), -3);
 
-        let mut c = Counter { value: 5, max: 5 };
+        let mut c = Counter { value: 6, max: 5 };
         c.increment_unchecked();
-        assert_eq!(c.value, 6);
+        assert_eq!(c.value, 7);
     }
 }
