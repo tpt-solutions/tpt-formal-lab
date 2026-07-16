@@ -1,0 +1,23 @@
+[package]
+name = "tpt-deterministic-sim"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Bitwise-deterministic simulation engine — identical inputs produce byte-for-byte identical outputs across CPU architectures"
+keywords = ["deterministic", "simulation", "fixed-point", "formal-verification", "reproducible"]
+categories = ["mathematics", "science", "simulation"]
+documentation = "https://docs.rs/tpt-deterministic-sim"
+readme = "README.md"
+exclude = ["/spec.txt", "/.github"]
+
+[features]
+default = []
+# Use tpt-exact-math::Rational for lossless arithmetic instead of fixed-point
+exact-math = ["dep:tpt-exact-math"]
+
+[dependencies]
+tpt-exact-math = { workspace = true, optional = true }
+rustc-hash     = { workspace = true }

@@ -1,0 +1,17 @@
+[package]
+name = "tpt-proof-ast"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Strongly-typed, proof-native AST framework — invalid AST states are compile errors, not runtime panics"
+keywords = ["ast", "formal-verification", "type-safe", "proof", "compiler"]
+categories = ["data-structures", "development-tools"]
+documentation = "https://docs.rs/tpt-proof-ast"
+readme = "README.md"
+exclude = ["/spec.txt", "/.github"]
+
+[dependencies]
+# pure type-system machinery — no external deps

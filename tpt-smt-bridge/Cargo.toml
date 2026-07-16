@@ -1,0 +1,17 @@
+[package]
+name = "tpt-smt-bridge"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Ergonomic, zero-dependency Rust interface to SMT solvers — build constraints in Rust, emit valid SMT-LIB2 strings"
+keywords = ["smt", "z3", "formal-verification", "satisfiability", "smtlib"]
+categories = ["mathematics", "development-tools", "science"]
+documentation = "https://docs.rs/tpt-smt-bridge"
+readme = "README.md"
+exclude = ["/spec.txt", "/.github"]
+
+[dependencies]
+# pure Rust string builder — no external deps

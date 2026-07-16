@@ -1,0 +1,22 @@
+[package]
+name = "tpt-verify-macros"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Procedural macros for embedding formal preconditions, postconditions, and invariants directly in Rust code"
+keywords = ["formal-verification", "contracts", "macros", "precondition", "postcondition"]
+categories = ["development-tools::procedural-macro-helpers", "development-tools"]
+documentation = "https://docs.rs/tpt-verify-macros"
+readme = "README.md"
+exclude = ["/spec.txt", "/.github"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = { workspace = true }
+syn         = { workspace = true }
+quote       = { workspace = true }

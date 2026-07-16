@@ -1,0 +1,22 @@
+[package]
+name = "tpt-exact-math"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Arbitrary-precision rational arithmetic and interval arithmetic — eliminate floating-point rounding errors entirely"
+keywords = ["rational", "exact-arithmetic", "interval-arithmetic", "no-std", "formal-verification"]
+categories = ["mathematics", "no-std", "science"]
+documentation = "https://docs.rs/tpt-exact-math"
+readme = "README.md"
+exclude = ["/spec.txt", "/.github"]
+
+[dependencies]
+num-bigint  = { workspace = true }
+num-traits  = { workspace = true }
+num-integer = { workspace = true }
+
+[dev-dependencies]
+# nothing extra needed for unit tests

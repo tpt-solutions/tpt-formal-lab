@@ -1,0 +1,22 @@
+Repo 6: tpt-formal-lab (Proof-Native & Foundational Research)
+Vision: The "Skunkworks" of the TPT ecosystem. This repo houses mathematically rigorous, verification-first building blocks. It is designed for developers building safety-critical systems (flight control, financial engines, cryptographic protocols) where floating-point errors, non-determinism, or logical flaws are unacceptable.
+Crate 1: tpt-exact-math
+Purpose: Arbitrary-precision rational numbers and interval arithmetic, designed to completely eliminate floating-point rounding errors.
+Problem Solved: Standard f64 math introduces silent, compounding rounding errors. In flight control or formal proofs, 0.1 + 0.2 == 0.30000000000000004 is a catastrophic failure. Existing Rust arbitrary-precision crates are often slow or lack interval arithmetic for bounding worst-case errors.
+Design Details: Pure Rust, no_std compatible. Implements exact fractional arithmetic (numerator/denominator with BigInt under the hood) and Interval Arithmetic (tracking the absolute minimum and maximum possible value of a calculation to guarantee bounds).
+Crate 2: tpt-proof-ast
+Purpose: A strongly-typed, mathematically verified Abstract Syntax Tree (AST) framework where every node carries its own type invariants.
+Problem Solved: Building a proof-native language (like your tpt-telos concept) requires an AST that cannot represent invalid states. Standard ASTs are just enums, making it easy to accidentally construct an invalid program tree.
+Design Details: Uses advanced Rust type-system features (like PhantomData and const generics) to encode typing rules directly into the AST structure. If it compiles, the AST is structurally and typologically valid by construction.
+Crate 3: tpt-deterministic-sim
+Purpose: A bitwise-deterministic physics and math simulation engine.
+Problem Solved: Standard physics engines use floating-point math and hash maps, meaning a simulation will diverge slightly depending on the CPU architecture (x86 vs ARM) or compiler optimizations. This makes formal verification and "replay" debugging impossible.
+Design Details: Enforces strict deterministic execution. Uses fixed-point arithmetic or the tpt-exact-math crate. Avoids all non-deterministic Rust features (like HashMap, which has random seeding, replacing it with FxHashMap or sorted structures). Guarantees that Sim A on a Mac produces the exact same byte-for-byte output as Sim A on a Linux server.
+Crate 4: tpt-smt-bridge
+Purpose: A zero-cost, highly ergonomic Rust interface to SMT (Satisfiability Modulo Theories) solvers like Z3 or CVC5.
+Problem Solved: Interfacing with Z3 from Rust usually requires heavy FFI bindings, complex C-API management, or writing raw SMT-LIB strings, which is error-prone and hard to debug.
+Design Details: Provides a fluent, builder-pattern API in pure Rust to construct logical propositions, constraints, and quantifiers. Compiles these down to highly optimized SMT-LIB2 strings or uses native C-API bindings safely, returning Rust Result types with human-readable counterexamples if a proof fails.
+Crate 5: tpt-verify-macros
+Purpose: Procedural macros for embedding formal preconditions, postconditions, and loop invariants directly into Rust code.
+Problem Solved: Formal verification tools (like Kani or Prusti) exist, but annotating code with formal contracts is syntactically verbose and disconnected from the business logic.
+Design Details: Allows developers to write #[tpt::requires(x > 0)], #[tpt::ensures(result >= 0)], or #[tpt::invariant(count <= MAX)] directly on functions and loops. The macro does not change runtime behavior (zero-cost), but it generates metadata or hooks that external verification tools can parse to mathematically prove the code's correctness.
