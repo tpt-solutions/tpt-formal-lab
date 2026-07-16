@@ -34,6 +34,20 @@
 //!
 //! println!("{}", stmt);
 //! ```
+//!
+//! # Type safety
+//!
+//! A [`Formula`] cannot be passed where a [`Term`] is expected, and vice versa —
+//! this is rejected at compile time, not at runtime:
+//!
+//! ```compile_fail
+//! use tpt_proof_ast::AstBuilder;
+//!
+//! let b = AstBuilder::new();
+//! let p = b.var_formula("P"); // Formula
+//! let x = b.var_term("x");    // Term
+//! let bad = b.add(p, x);      // ERROR: `add` expects two `Term`s, not a `Formula`
+//! ```
 
 #![deny(missing_docs)]
 #![deny(unsafe_code)]

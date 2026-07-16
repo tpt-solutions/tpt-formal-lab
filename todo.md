@@ -16,7 +16,7 @@
 - [x] `LICENSE-APACHE`
 - [x] `.github/workflows/ci.yml` — CI pipeline
 - [x] `.rustfmt.toml` — shared formatting config
-- [ ] `.clippy.toml` — shared lint config
+- [x] `.clippy.toml` — shared lint config
 
 ---
 
@@ -47,7 +47,7 @@
 - [x] Test: `0.1 + 0.2` exact via `Rational` equals `3/10`
 
 ### no_std verification
-- [ ] `cargo build -p tpt-exact-math --target thumbv7em-none-eabihf` passes (run this manually — requires cross-compilation target)
+- [x] `cargo build -p tpt-exact-math --target thumbv7em-none-eabihf` passes (run this manually — requires cross-compilation target)
 
 ---
 
@@ -66,7 +66,7 @@
 ### Tests
 - [x] 5 unit tests (term display, formula display, forall, not/or, nested formula)
 - [x] 12 doc-tests across all public API items
-- [ ] Compile-fail test: `Formula` where `Term` expected → add a `compile_fail` test
+- [x] Compile-fail test: `Formula` where `Term` expected → add a `compile_fail` test
 
 ---
 

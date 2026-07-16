@@ -5,6 +5,7 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
+homepage.workspace = true
 authors.workspace = true
 description = "Bitwise-deterministic simulation engine — identical inputs produce byte-for-byte identical outputs across CPU architectures"
 keywords = ["deterministic", "simulation", "fixed-point", "formal-verification", "reproducible"]
