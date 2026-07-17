@@ -90,7 +90,10 @@ pub struct Expr<K: Kind> {
 
 impl<K: Kind> Expr<K> {
     pub(crate) fn new(node: ExprNode) -> Self {
-        Self { node: Arc::new(node), _kind: PhantomData }
+        Self {
+            node: Arc::new(node),
+            _kind: PhantomData,
+        }
     }
 
     /// Returns the inner [`ExprNode`] for inspection or traversal.
@@ -116,21 +119,78 @@ fn display_node(node: &ExprNode, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         ExprNode::Var(name) => write!(f, "{name}"),
         ExprNode::IntLit(n) => write!(f, "{n}"),
         ExprNode::BoolLit(b) => write!(f, "{b}"),
-        ExprNode::Neg(e) => { write!(f, "(-")?; display_node(e, f)?; write!(f, ")") }
+        ExprNode::Neg(e) => {
+            write!(f, "(-")?;
+            display_node(e, f)?;
+            write!(f, ")")
+        }
         ExprNode::BinArith(op, l, r) => {
-            let sym = match op { ArithOp::Add => "+", ArithOp::Sub => "-", ArithOp::Mul => "*", ArithOp::Div => "/" };
-            write!(f, "(")?; display_node(l, f)?; write!(f, " {sym} ")?; display_node(r, f)?; write!(f, ")")
+            let sym = match op {
+                ArithOp::Add => "+",
+                ArithOp::Sub => "-",
+                ArithOp::Mul => "*",
+                ArithOp::Div => "/",
+            };
+            write!(f, "(")?;
+            display_node(l, f)?;
+            write!(f, " {sym} ")?;
+            display_node(r, f)?;
+            write!(f, ")")
         }
-        ExprNode::And(l, r)     => { write!(f, "(")?; display_node(l, f)?; write!(f, " ∧ ")?; display_node(r, f)?; write!(f, ")") }
-        ExprNode::Or(l, r)      => { write!(f, "(")?; display_node(l, f)?; write!(f, " ∨ ")?; display_node(r, f)?; write!(f, ")") }
-        ExprNode::Not(e)        => { write!(f, "¬")?; display_node(e, f) }
-        ExprNode::Implies(l, r) => { write!(f, "(")?; display_node(l, f)?; write!(f, " → ")?; display_node(r, f)?; write!(f, ")") }
-        ExprNode::Iff(l, r)     => { write!(f, "(")?; display_node(l, f)?; write!(f, " ↔ ")?; display_node(r, f)?; write!(f, ")") }
+        ExprNode::And(l, r) => {
+            write!(f, "(")?;
+            display_node(l, f)?;
+            write!(f, " ∧ ")?;
+            display_node(r, f)?;
+            write!(f, ")")
+        }
+        ExprNode::Or(l, r) => {
+            write!(f, "(")?;
+            display_node(l, f)?;
+            write!(f, " ∨ ")?;
+            display_node(r, f)?;
+            write!(f, ")")
+        }
+        ExprNode::Not(e) => {
+            write!(f, "¬")?;
+            display_node(e, f)
+        }
+        ExprNode::Implies(l, r) => {
+            write!(f, "(")?;
+            display_node(l, f)?;
+            write!(f, " → ")?;
+            display_node(r, f)?;
+            write!(f, ")")
+        }
+        ExprNode::Iff(l, r) => {
+            write!(f, "(")?;
+            display_node(l, f)?;
+            write!(f, " ↔ ")?;
+            display_node(r, f)?;
+            write!(f, ")")
+        }
         ExprNode::Cmp(op, l, r) => {
-            let sym = match op { CmpOp::Eq => "=", CmpOp::Ne => "≠", CmpOp::Lt => "<", CmpOp::Le => "≤", CmpOp::Gt => ">", CmpOp::Ge => "≥" };
-            write!(f, "(")?; display_node(l, f)?; write!(f, " {sym} ")?; display_node(r, f)?; write!(f, ")")
+            let sym = match op {
+                CmpOp::Eq => "=",
+                CmpOp::Ne => "≠",
+                CmpOp::Lt => "<",
+                CmpOp::Le => "≤",
+                CmpOp::Gt => ">",
+                CmpOp::Ge => "≥",
+            };
+            write!(f, "(")?;
+            display_node(l, f)?;
+            write!(f, " {sym} ")?;
+            display_node(r, f)?;
+            write!(f, ")")
         }
-        ExprNode::Forall(v, e) => { write!(f, "∀{v}. ")?; display_node(e, f) }
-        ExprNode::Exists(v, e) => { write!(f, "∃{v}. ")?; display_node(e, f) }
+        ExprNode::Forall(v, e) => {
+            write!(f, "∀{v}. ")?;
+            display_node(e, f)
+        }
+        ExprNode::Exists(v, e) => {
+            write!(f, "∃{v}. ")?;
+            display_node(e, f)
+        }
     }
 }

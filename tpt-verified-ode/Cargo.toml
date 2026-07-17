@@ -1,0 +1,17 @@
+[package]
+name = "tpt-verified-ode"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Rigorously verified ODE integration via interval arithmetic and Picard iteration"
+keywords = ["ode", "interval-arithmetic", "verified-computation", "no-std", "formal-verification"]
+categories = ["mathematics", "science", "no-std"]
+documentation = "https://docs.rs/tpt-verified-ode"
+readme = "README.md"
+exclude = ["/spec.txt", "/.github"]
+
+[dependencies]
+tpt-exact-math = { workspace = true }

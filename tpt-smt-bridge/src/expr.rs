@@ -1,7 +1,7 @@
 //! SMT expression AST.
 
-use std::sync::Arc;
 use crate::sort::Sort;
+use std::sync::Arc;
 
 /// An SMT expression that can be emitted as SMT-LIB2.
 ///
@@ -29,7 +29,7 @@ pub(crate) enum ExprInner {
     // Literals
     BoolLit(bool),
     IntLit(i64),
-    RealLit(i64, u64), // numerator, denominator for exact representation
+    RealLit(i64, u64),   // numerator, denominator for exact representation
     BitVecLit(u64, u32), // value, width
 
     // Variables
@@ -69,7 +69,9 @@ pub(crate) enum ExprInner {
 
 impl Expr {
     fn make(inner: ExprInner) -> Self {
-        Self { inner: Arc::new(inner) }
+        Self {
+            inner: Arc::new(inner),
+        }
     }
 
     // ── Literals ──────────────────────────────────────────────────────────
@@ -83,7 +85,9 @@ impl Expr {
     /// assert_eq!(emit_smtlib2(&Expr::bool(true)), "true");
     /// assert_eq!(emit_smtlib2(&Expr::bool(false)), "false");
     /// ```
-    pub fn bool(b: bool) -> Self { Self::make(ExprInner::BoolLit(b)) }
+    pub fn bool(b: bool) -> Self {
+        Self::make(ExprInner::BoolLit(b))
+    }
 
     /// Creates an integer literal.
     ///
@@ -93,7 +97,9 @@ impl Expr {
     /// use tpt_smt_bridge::{Expr, emit_smtlib2};
     /// assert_eq!(emit_smtlib2(&Expr::int(42)), "42");
     /// ```
-    pub fn int(n: i64) -> Self { Self::make(ExprInner::IntLit(n)) }
+    pub fn int(n: i64) -> Self {
+        Self::make(ExprInner::IntLit(n))
+    }
 
     /// Creates a real literal as an exact fraction `numer / denom`.
     pub fn real(numer: i64, denom: u64) -> Self {
@@ -124,7 +130,9 @@ impl Expr {
 
     /// Logical negation: `(not e)`.
     #[allow(clippy::should_implement_trait)] // AST constructor, not std::ops::Not
-    pub fn not(e: Expr) -> Self { Self::make(ExprInner::Not(e)) }
+    pub fn not(e: Expr) -> Self {
+        Self::make(ExprInner::Not(e))
+    }
 
     /// Logical conjunction: `(and a b ...)`.
     ///
@@ -135,30 +143,46 @@ impl Expr {
     /// let f = Expr::and(vec![Expr::bool(true), Expr::bool(false)]);
     /// assert_eq!(emit_smtlib2(&f), "(and true false)");
     /// ```
-    pub fn and(args: Vec<Expr>) -> Self { Self::make(ExprInner::And(args)) }
+    pub fn and(args: Vec<Expr>) -> Self {
+        Self::make(ExprInner::And(args))
+    }
 
     /// Logical disjunction: `(or a b ...)`.
-    pub fn or(args: Vec<Expr>) -> Self { Self::make(ExprInner::Or(args)) }
+    pub fn or(args: Vec<Expr>) -> Self {
+        Self::make(ExprInner::Or(args))
+    }
 
     /// Implication: `(=> a b)`.
-    pub fn implies(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Implies(a, b)) }
+    pub fn implies(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Implies(a, b))
+    }
 
     /// Biconditional: `(= a b)` on boolean sorts.
-    pub fn iff(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Iff(a, b)) }
+    pub fn iff(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Iff(a, b))
+    }
 
     // ── Comparison ────────────────────────────────────────────────────────
 
     /// Equality: `(= a b)`.
-    pub fn eq(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Eq(a, b)) }
+    pub fn eq(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Eq(a, b))
+    }
 
     /// Distinctness: `(distinct a b ...)`.
-    pub fn distinct(args: Vec<Expr>) -> Self { Self::make(ExprInner::Distinct(args)) }
+    pub fn distinct(args: Vec<Expr>) -> Self {
+        Self::make(ExprInner::Distinct(args))
+    }
 
     /// Less-than: `(< a b)`.
-    pub fn lt(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Lt(a, b)) }
+    pub fn lt(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Lt(a, b))
+    }
 
     /// Less-than-or-equal: `(<= a b)`.
-    pub fn le(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Le(a, b)) }
+    pub fn le(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Le(a, b))
+    }
 
     /// Greater-than: `(> a b)`.
     ///
@@ -170,10 +194,14 @@ impl Expr {
     /// let f = Expr::gt(x, Expr::int(0));
     /// assert_eq!(emit_smtlib2(&f), "(> x 0)");
     /// ```
-    pub fn gt(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Gt(a, b)) }
+    pub fn gt(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Gt(a, b))
+    }
 
     /// Greater-than-or-equal: `(>= a b)`.
-    pub fn ge(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Ge(a, b)) }
+    pub fn ge(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Ge(a, b))
+    }
 
     // ── Arithmetic ────────────────────────────────────────────────────────
 
@@ -188,32 +216,48 @@ impl Expr {
     /// assert_eq!(emit_smtlib2(&Expr::add(x, y)), "(+ x y)");
     /// ```
     #[allow(clippy::should_implement_trait)] // AST constructor, not std::ops::Add
-    pub fn add(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Add(vec![a, b])) }
+    pub fn add(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Add(vec![a, b]))
+    }
 
     /// Addition of multiple terms: `(+ a b c ...)`.
-    pub fn add_many(args: Vec<Expr>) -> Self { Self::make(ExprInner::Add(args)) }
+    pub fn add_many(args: Vec<Expr>) -> Self {
+        Self::make(ExprInner::Add(args))
+    }
 
     /// Subtraction: `(- a b)`.
     #[allow(clippy::should_implement_trait)] // AST constructor, not std::ops::Sub
-    pub fn sub(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Sub(a, b)) }
+    pub fn sub(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Sub(a, b))
+    }
 
     /// Multiplication: `(* a b)`.
     #[allow(clippy::should_implement_trait)] // AST constructor, not std::ops::Mul
-    pub fn mul(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Mul(vec![a, b])) }
+    pub fn mul(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Mul(vec![a, b]))
+    }
 
     /// Division: `(div a b)` for integers, `(/ a b)` for reals.
     #[allow(clippy::should_implement_trait)] // AST constructor, not std::ops::Div
-    pub fn div(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Div(a, b)) }
+    pub fn div(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Div(a, b))
+    }
 
     /// Integer modulo: `(mod a b)`.
-    pub fn modulo(a: Expr, b: Expr) -> Self { Self::make(ExprInner::Mod(a, b)) }
+    pub fn modulo(a: Expr, b: Expr) -> Self {
+        Self::make(ExprInner::Mod(a, b))
+    }
 
     /// Unary negation: `(- e)`.
     #[allow(clippy::should_implement_trait)] // AST constructor, not std::ops::Neg
-    pub fn neg(e: Expr) -> Self { Self::make(ExprInner::Neg(e)) }
+    pub fn neg(e: Expr) -> Self {
+        Self::make(ExprInner::Neg(e))
+    }
 
     /// Absolute value: `(abs e)`.
-    pub fn abs(e: Expr) -> Self { Self::make(ExprInner::Abs(e)) }
+    pub fn abs(e: Expr) -> Self {
+        Self::make(ExprInner::Abs(e))
+    }
 
     // ── Quantifiers ───────────────────────────────────────────────────────
 

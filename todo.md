@@ -1,7 +1,12 @@
 # tpt-formal-lab — Build Checklist
 
-> Optimised for crates.io release at v0.1.0 (all 5 crates simultaneously).
+> Optimised for crates.io release at v0.1.0 (all 5 original crates simultaneously).
 > Publish order: tpt-exact-math → tpt-proof-ast → tpt-verify-macros → tpt-deterministic-sim → tpt-smt-bridge
+>
+> 5 additional crates are in development (see Phases 10–14 below) and are **not**
+> part of the v0.1.0 publish batch — publishing them is a separate future decision.
+> Planned dependency order: tpt-exact-math → tpt-verified-ode; tpt-verify-macros → tpt-verified-algorithms;
+> tpt-redundancy, tpt-trace-macros, tpt-det-proptest are standalone.
 
 ---
 
@@ -146,7 +151,7 @@
 - [x] All crates: `exclude` field to skip CI, spec, snapshot files
 - [x] All `README.md` files: badges (crates.io version, docs.rs, CI status, license)
 - [x] Top-level `README.md`: ecosystem overview with links to each crate
-- [ ] Set `repository` field to actual GitHub URL once repo is created
+- [x] Set `repository` field to actual GitHub URL once repo is created (`github.com/tpt-solutions/tpt-formal-lab`, matching the pushed remote)
 
 ---
 
@@ -160,7 +165,7 @@
 - [x] CI job: no_std check (`--target thumbv7em-none-eabihf` for tpt-exact-math)
 - [x] CI job: `cargo publish --dry-run` for each crate (in dep order)
 - [x] `.rustfmt.toml` — `edition = "2021"`, `max_width = 100`
-- [ ] Push to GitHub to activate CI
+- [x] Push to GitHub to activate CI (`origin/master` = local `master` @ `6f8225f`)
 
 ---
 
@@ -181,3 +186,119 @@
 - [ ] `cargo publish -p tpt-deterministic-sim` → wait for index
 - [ ] `cargo publish -p tpt-smt-bridge` → wait for index
 - [ ] Verify all 5 crates appear on crates.io and docs.rs
+
+---
+
+## Phase 10 — `tpt-redundancy`
+
+### Setup
+- [x] `tpt-redundancy/Cargo.toml` — package manifest with crates.io metadata
+- [x] `tpt-redundancy/README.md` — crate-level docs (becomes docs.rs landing page)
+
+### Implementation
+- [x] `tpt-redundancy/src/lib.rs` — `#![no_std]`, `#![deny(missing_docs)]`, `#![deny(unsafe_code)]`, re-exports
+- [x] `tpt-redundancy/src/vote.rs` — `Replicated<T, const N: usize>`, `VoteResult<T>`
+  - [x] `majority_vote()` — `Unanimous`/`Majority`/`NoMajority`
+  - [x] `median_vote()` — odd `N`, `Ord + Clone`
+  - [x] `bitwise_vote()` — bit-by-bit majority for unsigned integer types
+
+### Tests
+- [x] Unanimous / majority / no-majority cases
+- [x] Even-`N` tie handling
+- [x] Median vote against known arrays
+- [x] Bitwise voter against hand-computed bit patterns
+
+---
+
+## Phase 11 — `tpt-verified-ode`
+
+### Setup
+- [x] `tpt-verified-ode/Cargo.toml` — depends on `tpt-exact-math`
+- [x] `tpt-verified-ode/README.md` — states the rigor caveat (small-`h` Picard contraction requirement)
+
+### Implementation
+- [x] `tpt-verified-ode/src/lib.rs` — `#![no_std]` + `alloc`, `#![deny(missing_docs)]`, re-exports
+- [x] `tpt-verified-ode/src/solver.rs` — `IntervalFn` trait, `OdeSolver<F>`
+  - [x] A priori Picard-iteration enclosure step
+  - [x] Tightened step using the a priori box
+  - [x] `step()`, `solve(steps)`
+
+### Tests
+- [x] `y' = y` enclosure contains rational approximations of `eʰ`, `e²ʰ`, …
+- [x] `y' = -y`
+- [x] `y' = c` (constant, exact enclosure)
+- [x] Enclosure-width sanity checks across step counts
+
+---
+
+## Phase 12 — `tpt-trace-macros`
+
+### Setup
+- [x] `tpt-trace-macros/Cargo.toml` — `proc-macro = true`, syn/quote/proc-macro2 deps
+- [x] `tpt-trace-macros/README.md`
+
+### Implementation
+- [x] `tpt-trace-macros/src/lib.rs` — `#[traces("REQ-…")]` attribute macro
+  - [x] `**Traces:** …` doc injection
+  - [x] Generated `const __TPT_TRACES_<FN_NAME_UPPER>: &[&str]`
+
+### Tests
+- [x] Doc-tests covering macro usage
+- [x] Integration test asserting the generated const matches macro arguments
+
+---
+
+## Phase 13 — `tpt-verified-algorithms`
+
+### Setup
+- [x] `tpt-verified-algorithms/Cargo.toml` — depends on `tpt-verify-macros`
+- [x] `tpt-verified-algorithms/README.md`
+
+### Implementation
+- [x] `tpt-verified-algorithms/src/lib.rs` — `#![no_std]` + `alloc`, `#![deny(missing_docs)]`, re-exports
+- [x] `tpt-verified-algorithms/src/predicates.rs` — `is_sorted`, `is_permutation`
+- [x] `tpt-verified-algorithms/src/sort.rs` — `verified_sort` with debug-mode postcondition checks
+- [x] `tpt-verified-algorithms/src/search.rs` — `verified_binary_search` with `#[requires]`/`#[ensures]`
+
+### Tests
+- [x] Sortedness + permutation-preservation (empty, single, duplicates, reverse-sorted)
+- [x] Binary search hit/miss
+- [x] Precondition-violation panics in debug builds
+
+---
+
+## Phase 14 — `tpt-det-proptest`
+
+### Setup
+- [x] `tpt-det-proptest/Cargo.toml` — zero external deps
+- [x] `tpt-det-proptest/README.md`
+
+### Implementation
+- [x] `tpt-det-proptest/src/lib.rs` — `#![no_std]` + `alloc`, `#![deny(missing_docs)]`, re-exports
+- [x] `tpt-det-proptest/src/rng.rs` — `Xorshift64` deterministic PRNG
+- [x] `tpt-det-proptest/src/strategy.rs` — `Strategy` trait, `IntRange<T>`, `AnyBool`
+- [x] `tpt-det-proptest/src/check.rs` — `check()` runner with bisection shrinking
+
+### Tests
+- [x] Same seed ⇒ identical generated sequence
+- [x] Known failing property shrinks to its minimal counterexample
+- [x] Passing property runs all iterations without failure
+
+---
+
+## Phase 15 — New-crate workspace wiring
+
+- [x] Add all 5 new crates to root `Cargo.toml` `[workspace] members` and `[workspace.dependencies]`
+- [x] Update root `README.md` crates table and quick-look examples
+- [x] Update `CHANGELOG.md` "Unreleased" section with the 5 additions
+- [x] `cargo test --workspace`, `cargo clippy --workspace -- -D warnings`, `cargo fmt --all -- --check`, `cargo doc --workspace --no-deps` all green
+
+---
+
+## Phase 16 — crates.io Polish parity for the 5 new crates
+
+- [x] `tpt-redundancy`, `tpt-verified-ode`, `tpt-trace-macros`, `tpt-verified-algorithms`, `tpt-det-proptest`: `rust-version.workspace = true`, `keywords`, `categories`, `exclude` set in `Cargo.toml`
+- [x] `#![doc(html_root_url = ...)]` present on lib crates (`tpt-trace-macros` is proc-macro-only and has no lib doc root, which is expected)
+- [x] Each crate's `README.md` has CI/license badges
+- [ ] Commit the working-tree changes for the 5 new crates + supporting edits to `Cargo.toml`/`README.md`/`CHANGELOG.md` (currently untracked/modified, not yet committed)
+- [ ] Decide and record a publish plan for the 5 new crates (currently intentionally excluded from the v0.1.0 batch — see note at top of this file)

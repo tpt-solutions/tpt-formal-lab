@@ -68,7 +68,10 @@ impl Interval {
     /// assert_eq!(p.width(), Rational::zero());
     /// ```
     pub fn point(x: Rational) -> Self {
-        Self { lo: x.clone(), hi: x }
+        Self {
+            lo: x.clone(),
+            hi: x,
+        }
     }
 
     /// Returns the lower bound of the interval.
@@ -154,8 +157,16 @@ impl Interval {
     /// assert_eq!(h.hi(), &Rational::from_frac(3, 4));
     /// ```
     pub fn hull(&self, other: &Interval) -> Interval {
-        let lo = if self.lo <= other.lo { self.lo.clone() } else { other.lo.clone() };
-        let hi = if self.hi >= other.hi { self.hi.clone() } else { other.hi.clone() };
+        let lo = if self.lo <= other.lo {
+            self.lo.clone()
+        } else {
+            other.lo.clone()
+        };
+        let hi = if self.hi >= other.hi {
+            self.hi.clone()
+        } else {
+            other.hi.clone()
+        };
         Interval { lo, hi }
     }
 }
@@ -188,7 +199,10 @@ impl Neg for Interval {
     type Output = Self;
     /// `-[a,b] = [-b,-a]`
     fn neg(self) -> Self {
-        Self { lo: -self.hi, hi: -self.lo }
+        Self {
+            lo: -self.hi,
+            hi: -self.lo,
+        }
     }
 }
 
@@ -236,10 +250,18 @@ impl fmt::Display for Interval {
 
 impl Rational {
     fn min(self, other: Self) -> Self {
-        if self <= other { self } else { other }
+        if self <= other {
+            self
+        } else {
+            other
+        }
     }
     fn max(self, other: Self) -> Self {
-        if self >= other { self } else { other }
+        if self >= other {
+            self
+        } else {
+            other
+        }
     }
 }
 
@@ -250,7 +272,9 @@ mod tests {
     use super::*;
     use alloc::string::ToString;
 
-    fn r(n: i64, d: i64) -> Rational { Rational::from_frac(n, d) }
+    fn r(n: i64, d: i64) -> Rational {
+        Rational::from_frac(n, d)
+    }
 
     #[test]
     fn addition_is_correct() {

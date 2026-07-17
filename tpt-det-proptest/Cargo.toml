@@ -1,0 +1,17 @@
+[package]
+name = "tpt-det-proptest"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Deterministic property-based testing with a fixed-seed PRNG and bisection shrinking"
+keywords = ["property-testing", "deterministic", "proptest", "shrinking", "no-std"]
+categories = ["development-tools::testing", "no-std"]
+documentation = "https://docs.rs/tpt-det-proptest"
+readme = "README.md"
+exclude = ["/spec.txt", "/.github"]
+
+[dependencies]
+# zero external deps

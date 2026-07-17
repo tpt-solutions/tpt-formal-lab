@@ -1,15 +1,15 @@
 [package]
-name = "tpt-verify-macros"
+name = "tpt-trace-macros"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 authors.workspace = true
-description = "Procedural macros for embedding formal preconditions, postconditions, and invariants directly in Rust code"
-keywords = ["formal-verification", "contracts", "macros", "precondition", "postcondition"]
+description = "Attribute macro that traces which requirements a function implements"
+keywords = ["tracing", "requirements", "macros", "procedural-macro", "documentation"]
 categories = ["development-tools::procedural-macro-helpers", "development-tools"]
-documentation = "https://docs.rs/tpt-verify-macros"
+documentation = "https://docs.rs/tpt-trace-macros"
 readme = "README.md"
 exclude = ["/spec.txt", "/.github"]
 
@@ -18,5 +18,5 @@ proc-macro = true
 
 [dependencies]
 proc-macro2 = { workspace = true }
-syn         = { workspace = true }
-quote       = { workspace = true }
+syn = { workspace = true }
+quote = { workspace = true }

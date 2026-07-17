@@ -110,7 +110,9 @@ impl<const DENOM: i64> FixedPoint<DENOM> {
     /// assert_eq!(Fp::from_raw(-500).abs(), Fp::from_raw(500));
     /// ```
     pub const fn abs(self) -> Self {
-        Self { raw: self.raw.abs() }
+        Self {
+            raw: self.raw.abs(),
+        }
     }
 
     /// Converts to `f64` for display or interoperability only.
@@ -125,7 +127,9 @@ impl<const DENOM: i64> FixedPoint<DENOM> {
     /// Lossy — prefer [`from_raw`](Self::from_raw) or [`from_int`](Self::from_int)
     /// for deterministic construction.
     pub fn from_f64_truncating(v: f64) -> Self {
-        Self { raw: (v * DENOM as f64) as i64 }
+        Self {
+            raw: (v * DENOM as f64) as i64,
+        }
     }
 }
 
@@ -134,14 +138,24 @@ impl<const DENOM: i64> FixedPoint<DENOM> {
 impl<const DENOM: i64> Add for FixedPoint<DENOM> {
     type Output = Self;
     fn add(self, rhs: Self) -> Self {
-        Self { raw: self.raw.checked_add(rhs.raw).expect("FixedPoint addition overflow") }
+        Self {
+            raw: self
+                .raw
+                .checked_add(rhs.raw)
+                .expect("FixedPoint addition overflow"),
+        }
     }
 }
 
 impl<const DENOM: i64> Sub for FixedPoint<DENOM> {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self {
-        Self { raw: self.raw.checked_sub(rhs.raw).expect("FixedPoint subtraction overflow") }
+        Self {
+            raw: self
+                .raw
+                .checked_sub(rhs.raw)
+                .expect("FixedPoint subtraction overflow"),
+        }
     }
 }
 
@@ -158,7 +172,10 @@ impl<const DENOM: i64> Mul for FixedPoint<DENOM> {
     /// then rescales back to `/ D` by dividing the raw product by `DENOM`.
     #[allow(clippy::suspicious_arithmetic_impl)] // rescaling division is correct fixed-point math, not a bug
     fn mul(self, rhs: Self) -> Self {
-        let prod = self.raw.checked_mul(rhs.raw).expect("FixedPoint multiplication overflow");
+        let prod = self
+            .raw
+            .checked_mul(rhs.raw)
+            .expect("FixedPoint multiplication overflow");
         Self { raw: prod / DENOM }
     }
 }
@@ -172,8 +189,13 @@ impl<const DENOM: i64> Div for FixedPoint<DENOM> {
     /// Panics if `rhs` is zero.
     fn div(self, rhs: Self) -> Self {
         assert!(!rhs.is_zero(), "FixedPoint division by zero");
-        let scaled = self.raw.checked_mul(DENOM).expect("FixedPoint division overflow");
-        Self { raw: scaled / rhs.raw }
+        let scaled = self
+            .raw
+            .checked_mul(DENOM)
+            .expect("FixedPoint division overflow");
+        Self {
+            raw: scaled / rhs.raw,
+        }
     }
 }
 
@@ -186,7 +208,14 @@ impl<const DENOM: i64> fmt::Display for FixedPoint<DENOM> {
         let abs_raw = self.raw.unsigned_abs();
         let sign = if self.raw < 0 { "-" } else { "" };
         let denom_u = DENOM as u64;
-        write!(f, "{}{}.{:0>width$}", sign, abs_raw / denom_u, abs_raw % denom_u, width = digits)
+        write!(
+            f,
+            "{}{}.{:0>width$}",
+            sign,
+            abs_raw / denom_u,
+            abs_raw % denom_u,
+            width = digits
+        )
     }
 }
 

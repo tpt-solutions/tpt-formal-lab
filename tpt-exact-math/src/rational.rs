@@ -205,7 +205,10 @@ impl Rational {
 
     fn reduce(numer: BigInt, denom: BigInt) -> Self {
         if numer.is_zero() {
-            return Self { numer: BigInt::zero(), denom: BigInt::one() };
+            return Self {
+                numer: BigInt::zero(),
+                denom: BigInt::one(),
+            };
         }
         // Ensure denom is positive
         let (numer, denom) = if denom < BigInt::zero() {
@@ -225,7 +228,10 @@ impl Rational {
 
 impl From<i64> for Rational {
     fn from(n: i64) -> Self {
-        Self { numer: BigInt::from(n), denom: BigInt::one() }
+        Self {
+            numer: BigInt::from(n),
+            denom: BigInt::one(),
+        }
     }
 }
 
@@ -237,13 +243,19 @@ impl From<i32> for Rational {
 
 impl From<u64> for Rational {
     fn from(n: u64) -> Self {
-        Self { numer: BigInt::from(n), denom: BigInt::one() }
+        Self {
+            numer: BigInt::from(n),
+            denom: BigInt::one(),
+        }
     }
 }
 
 impl From<BigInt> for Rational {
     fn from(n: BigInt) -> Self {
-        Self { numer: n, denom: BigInt::one() }
+        Self {
+            numer: n,
+            denom: BigInt::one(),
+        }
     }
 }
 
@@ -286,7 +298,10 @@ impl Div for Rational {
 impl Neg for Rational {
     type Output = Self;
     fn neg(self) -> Self {
-        Self { numer: -self.numer, denom: self.denom }
+        Self {
+            numer: -self.numer,
+            denom: self.denom,
+        }
     }
 }
 
@@ -328,12 +343,18 @@ impl fmt::Debug for Rational {
 // ── num-traits compatibility ──────────────────────────────────────────────────
 
 impl Zero for Rational {
-    fn zero() -> Self { Rational::zero() }
-    fn is_zero(&self) -> bool { Rational::is_zero(self) }
+    fn zero() -> Self {
+        Rational::zero()
+    }
+    fn is_zero(&self) -> bool {
+        Rational::is_zero(self)
+    }
 }
 
 impl One for Rational {
-    fn one() -> Self { Rational::one() }
+    fn one() -> Self {
+        Rational::one()
+    }
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────

@@ -38,3 +38,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SmtSolver`: fluent builder emitting SMT-LIB2 strings
 - `CounterExample`: parser for `(model ...)` solver output
 - `emit_smtlib2`: standalone expression serialiser
+
+#### `tpt-redundancy`
+- `Replicated<T, const N>`: N-modular redundant channel container
+- `majority_vote`: `Unanimous` / `Majority` / `NoMajority` classification
+- `median_vote` / `order_statistic`: outlier-robust voting for `Ord` types
+- `bitwise_vote`: bit-by-bit majority for unsigned integers
+- `#![no_std]` + `#![deny(unsafe_code)]`, zero dependencies
+
+#### `tpt-verified-ode`
+- `IntervalFn` trait: right-hand side enclosure of `y' = f(t, y)`
+- `OdeSolver<F>`: interval-arithmetic Picard-iteration verified integrator
+- `step` / `solve`: carry-forward enclosure guaranteed to contain the true solution
+- Depends on `tpt-exact-math`; `#![no_std]` + `alloc`
+
+#### `tpt-trace-macros`
+- `#[traces("REQ-…")]`: requirement-tracing attribute macro
+- Injects `**Traces:** …` doc comments and a `__TPT_TRACES_<FN>` const slice
+
+#### `tpt-verified-algorithms`
+- `is_sorted` / `is_permutation`: predicate building blocks
+- `verified_sort`: insertion sort with debug-mode sortedness + permutation checks
+- `verified_binary_search`: binary search guarded by `#[requires]` / `#[ensures]`
+- Depends on `tpt-verify-macros`; `#![no_std]` + `alloc`
+
+#### `tpt-det-proptest`
+- `Xorshift64`: deterministic PRNG
+- `Strategy` trait with `IntRange<T>` and `AnyBool` implementations
+- `Seed`: reproducible seed for runs and shrinking
+- `check`: property runner with bisection shrinking to a minimal counterexample
+- `#![no_std]` + `alloc`, zero external dependencies

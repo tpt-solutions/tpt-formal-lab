@@ -1,0 +1,17 @@
+[package]
+name = "tpt-verified-algorithms"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Verified sorting and searching with debug-mode contract checks"
+keywords = ["algorithms", "sorting", "binary-search", "verification", "no-std"]
+categories = ["algorithms", "no-std", "science"]
+documentation = "https://docs.rs/tpt-verified-algorithms"
+readme = "README.md"
+exclude = ["/spec.txt", "/.github"]
+
+[dependencies]
+tpt-verify-macros = { workspace = true }

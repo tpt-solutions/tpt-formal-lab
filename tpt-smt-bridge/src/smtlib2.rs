@@ -22,7 +22,13 @@ pub fn emit_smtlib2(expr: &Expr) -> String {
 
 fn emit_inner(inner: &ExprInner) -> String {
     match inner {
-        ExprInner::BoolLit(b) => if *b { "true".into() } else { "false".into() },
+        ExprInner::BoolLit(b) => {
+            if *b {
+                "true".into()
+            } else {
+                "false".into()
+            }
+        }
         ExprInner::IntLit(n) => {
             if *n < 0 {
                 format!("(- {})", n.unsigned_abs())
@@ -42,11 +48,11 @@ fn emit_inner(inner: &ExprInner) -> String {
 
         ExprInner::Not(e) => format!("(not {})", emit_inner(&e.inner)),
         ExprInner::And(args) => nary("and", args),
-        ExprInner::Or(args)  => nary("or", args),
+        ExprInner::Or(args) => nary("or", args),
         ExprInner::Implies(a, b) => binary("=>", a, b),
-        ExprInner::Iff(a, b)    => binary("=", a, b),
+        ExprInner::Iff(a, b) => binary("=", a, b),
 
-        ExprInner::Eq(a, b)       => binary("=", a, b),
+        ExprInner::Eq(a, b) => binary("=", a, b),
         ExprInner::Distinct(args) => nary("distinct", args),
         ExprInner::Lt(a, b) => binary("<", a, b),
         ExprInner::Le(a, b) => binary("<=", a, b),
@@ -58,8 +64,8 @@ fn emit_inner(inner: &ExprInner) -> String {
         ExprInner::Mul(args) => nary("*", args),
         ExprInner::Div(a, b) => binary("/", a, b),
         ExprInner::Mod(a, b) => binary("mod", a, b),
-        ExprInner::Neg(e)    => format!("(- {})", emit_inner(&e.inner)),
-        ExprInner::Abs(e)    => format!("(abs {})", emit_inner(&e.inner)),
+        ExprInner::Neg(e) => format!("(- {})", emit_inner(&e.inner)),
+        ExprInner::Abs(e) => format!("(abs {})", emit_inner(&e.inner)),
 
         ExprInner::Forall(vars, body) => quantifier("forall", vars, body),
         ExprInner::Exists(vars, body) => quantifier("exists", vars, body),

@@ -2,7 +2,7 @@
 
 > Proof-native, verification-first building blocks for safety-critical Rust.
 
-[![CI](https://github.com/tpt-rs/tpt-formal-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/tpt-rs/tpt-formal-lab/actions)
+[![CI](https://github.com/tpt-solutions/tpt-formal-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/tpt-solutions/tpt-formal-lab/actions)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
 ---
@@ -21,6 +21,11 @@ and formally verified compilers.
 | [`tpt-verify-macros`](tpt-verify-macros/) | Procedural macros for `#[requires]`, `#[ensures]`, `#[invariant]` | [![crates.io](https://img.shields.io/crates/v/tpt-verify-macros.svg)](https://crates.io/crates/tpt-verify-macros) |
 | [`tpt-deterministic-sim`](tpt-deterministic-sim/) | Bitwise-deterministic simulation engine | [![crates.io](https://img.shields.io/crates/v/tpt-deterministic-sim.svg)](https://crates.io/crates/tpt-deterministic-sim) |
 | [`tpt-smt-bridge`](tpt-smt-bridge/) | Ergonomic Rust → SMT-LIB2 bridge for Z3, CVC5, etc. | [![crates.io](https://img.shields.io/crates/v/tpt-smt-bridge.svg)](https://crates.io/crates/tpt-smt-bridge) |
+| [`tpt-redundancy`](tpt-redundancy/) | N-modular redundancy and voting for fault-tolerant systems | [![crates.io](https://img.shields.io/crates/v/tpt-redundancy.svg)](https://crates.io/crates/tpt-redundancy) |
+| [`tpt-verified-ode`](tpt-verified-ode/) | Rigorously verified ODE integration via interval arithmetic | [![crates.io](https://img.shields.io/crates/v/tpt-verified-ode.svg)](https://crates.io/crates/tpt-verified-ode) |
+| [`tpt-trace-macros`](tpt-trace-macros/) | `#[traces("REQ-…")]` macro linking code to requirements | [![crates.io](https://img.shields.io/crates/v/tpt-trace-macros.svg)](https://crates.io/crates/tpt-trace-macros) |
+| [`tpt-verified-algorithms`](tpt-verified-algorithms/) | Verified sorting and searching with debug-mode contract checks | [![crates.io](https://img.shields.io/crates/v/tpt-verified-algorithms.svg)](https://crates.io/crates/tpt-verified-algorithms) |
+| [`tpt-det-proptest`](tpt-det-proptest/) | Deterministic property-based testing with bisection shrinking | [![crates.io](https://img.shields.io/crates/v/tpt-det-proptest.svg)](https://crates.io/crates/tpt-det-proptest) |
 
 ---
 
@@ -79,6 +84,54 @@ solver.assert(Expr::gt(Expr::var("x", Sort::Int), Expr::int(0)));
 println!("{}", solver.emit_check()); // pipe to z3 -in
 ```
 
+### Verified voting — tolerate faulty channels
+
+```rust
+use tpt_redundancy::Replicated;
+
+let channels = Replicated::new([10u32, 10u32, 12u32]);
+assert_eq!(channels.majority_vote().value(), Some(&10u32));
+```
+
+### Verified ODE integration — enclosures, not floats
+
+```rust
+use tpt_exact_math::Rational;
+use tpt_verified_ode::OdeSolver;
+
+let mut solver = OdeSolver::new(|_t, y| y.clone(), Rational::from(0), Rational::from(1));
+let (lo, hi) = solver.step(&Rational::from_frac(1, 4)); // contains e^0.25
+assert!(lo <= hi);
+```
+
+### Requirement tracing — link code to specs
+
+```rust
+use tpt_trace_macros::traces;
+
+#[traces("REQ-BRAKE-001")]
+pub fn braking_distance(speed: f64) -> f64 { 0.5 * speed * speed }
+```
+
+### Verified algorithms — checked postconditions
+
+```rust
+use tpt_verified_algorithms::verified_sort;
+
+let mut data = [3, 1, 2];
+verified_sort(&mut data);
+assert_eq!(data, [1, 2, 3]);
+```
+
+### Deterministic property testing — reproducible by seed
+
+```rust
+use tpt_det_proptest::{check, IntRange, Seed};
+
+let r = check(100, Seed(1), IntRange::<i32>::new(0, 100), |x| *x < 100);
+assert!(r.is_ok());
+```
+
 ---
 
 ## Getting started
@@ -92,6 +145,11 @@ tpt-proof-ast       = "0.1"
 tpt-verify-macros   = "0.1"
 tpt-deterministic-sim = "0.1"
 tpt-smt-bridge      = "0.1"
+tpt-redundancy      = "0.1"
+tpt-verified-ode    = "0.1"
+tpt-trace-macros    = "0.1"
+tpt-verified-algorithms = "0.1"
+tpt-det-proptest    = "0.1"
 ```
 
 ## MSRV
