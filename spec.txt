@@ -12,11 +12,11 @@ Crate 3: tpt-deterministic-sim
 Purpose: A bitwise-deterministic physics and math simulation engine.
 Problem Solved: Standard physics engines use floating-point math and hash maps, meaning a simulation will diverge slightly depending on the CPU architecture (x86 vs ARM) or compiler optimizations. This makes formal verification and "replay" debugging impossible.
 Design Details: Enforces strict deterministic execution. Uses fixed-point arithmetic or the tpt-exact-math crate. Avoids all non-deterministic Rust features (like HashMap, which has random seeding, replacing it with FxHashMap or sorted structures). Guarantees that Sim A on a Mac produces the exact same byte-for-byte output as Sim A on a Linux server.
-Crate 4: tpt-smt-bridge
+Crate 4: out-smt-bridge
 Purpose: A zero-cost, highly ergonomic Rust interface to SMT (Satisfiability Modulo Theories) solvers like Z3 or CVC5.
 Problem Solved: Interfacing with Z3 from Rust usually requires heavy FFI bindings, complex C-API management, or writing raw SMT-LIB strings, which is error-prone and hard to debug.
 Design Details: Provides a fluent, builder-pattern API in pure Rust to construct logical propositions, constraints, and quantifiers. Compiles these down to highly optimized SMT-LIB2 strings or uses native C-API bindings safely, returning Rust Result types with human-readable counterexamples if a proof fails.
-Crate 5: tpt-verify-macros
+Crate 5: out-verify-macros
 Purpose: Procedural macros for embedding formal preconditions, postconditions, and loop invariants directly into Rust code.
 Problem Solved: Formal verification tools (like Kani or Prusti) exist, but annotating code with formal contracts is syntactically verbose and disconnected from the business logic.
 Design Details: Allows developers to write #[tpt::requires(x > 0)], #[tpt::ensures(result >= 0)], or #[tpt::invariant(count <= MAX)] directly on functions and loops. The macro does not change runtime behavior (zero-cost), but it generates metadata or hooks that external verification tools can parse to mathematically prove the code's correctness.

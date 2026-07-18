@@ -10,7 +10,7 @@ use crate::sort::Sort;
 /// # Example
 ///
 /// ```rust
-/// use tpt_smt_bridge::{SmtSolver, Sort, Expr};
+/// use out_smt_bridge::{SmtSolver, Sort, Expr};
 ///
 /// let mut solver = SmtSolver::new();
 /// solver.declare_const("n", Sort::Int);
@@ -44,7 +44,7 @@ impl SmtSolver {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::SmtSolver;
+    /// use out_smt_bridge::SmtSolver;
     ///
     /// let mut s = SmtSolver::new();
     /// s.set_logic("QF_LIA");
@@ -62,7 +62,7 @@ impl SmtSolver {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{SmtSolver, Sort};
+    /// use out_smt_bridge::{SmtSolver, Sort};
     ///
     /// let mut s = SmtSolver::new();
     /// s.declare_const("x", Sort::Int);
@@ -103,7 +103,7 @@ impl SmtSolver {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{SmtSolver, Sort, Expr};
+    /// use out_smt_bridge::{SmtSolver, Sort, Expr};
     ///
     /// let mut s = SmtSolver::new();
     /// s.declare_const("x", Sort::Int);
@@ -129,7 +129,7 @@ impl SmtSolver {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{SmtSolver, Sort, Expr};
+    /// use out_smt_bridge::{SmtSolver, Sort, Expr};
     ///
     /// let mut s = SmtSolver::new();
     /// s.declare_const("x", Sort::Int);

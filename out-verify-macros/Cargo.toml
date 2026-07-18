@@ -1,5 +1,5 @@
 [package]
-name = "tpt-verify-macros"
+name = "out-verify-macros"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,7 +9,7 @@ authors.workspace = true
 description = "Procedural macros for embedding formal preconditions, postconditions, and invariants directly in Rust code"
 keywords = ["formal-verification", "contracts", "macros", "precondition", "postcondition"]
 categories = ["development-tools::procedural-macro-helpers", "development-tools"]
-documentation = "https://docs.rs/tpt-verify-macros"
+documentation = "https://docs.rs/out-verify-macros"
 readme = "README.md"
 exclude = ["/spec.txt", "/.github"]
 

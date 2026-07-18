@@ -1,7 +1,7 @@
 //! Integration tests: contract violations panic in debug builds and are
 //! zero-cost (no-op) in release builds.
 
-use tpt_verify_macros::{ensures, invariant, pure, requires};
+use out_verify_macros::{ensures, invariant, pure, requires};
 
 #[requires(x > 0)]
 fn positive_only(x: i32) -> i32 {

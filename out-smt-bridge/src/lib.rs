@@ -2,7 +2,7 @@
 //!
 //! # Overview
 //!
-//! `tpt-smt-bridge` lets you build logical constraints in idiomatic Rust and
+//! `out-smt-bridge` lets you build logical constraints in idiomatic Rust and
 //! emit them as valid [SMT-LIB2](https://smtlib.cs.uiowa.edu/) strings that
 //! any conforming solver (Z3, CVC5, Bitwuzla, etc.) can consume.
 //!
@@ -12,7 +12,7 @@
 //! # Quick start
 //!
 //! ```rust
-//! use tpt_smt_bridge::{SmtSolver, Sort, Expr};
+//! use out_smt_bridge::{SmtSolver, Sort, Expr};
 //!
 //! let mut solver = SmtSolver::new();
 //!
@@ -41,7 +41,7 @@
 //! to extract the concrete witness values:
 //!
 //! ```rust
-//! use tpt_smt_bridge::CounterExample;
+//! use out_smt_bridge::CounterExample;
 //!
 //! let model = r#"(model
 //!   (define-fun x () Int 3)
@@ -55,7 +55,7 @@
 
 #![deny(missing_docs)]
 #![deny(unsafe_code)]
-#![doc(html_root_url = "https://docs.rs/tpt-smt-bridge/0.1.0/")]
+#![doc(html_root_url = "https://docs.rs/out-smt-bridge/0.1.0/")]
 
 mod counter_example;
 mod expr;

@@ -1,7 +1,7 @@
-# tpt-smt-bridge
+# out-smt-bridge
 
-[![crates.io](https://img.shields.io/crates/v/tpt-smt-bridge.svg)](https://crates.io/crates/tpt-smt-bridge)
-[![docs.rs](https://docs.rs/tpt-smt-bridge/badge.svg)](https://docs.rs/tpt-smt-bridge)
+[![crates.io](https://img.shields.io/crates/v/out-smt-bridge.svg)](https://crates.io/crates/out-smt-bridge)
+[![docs.rs](https://docs.rs/out-smt-bridge/badge.svg)](https://docs.rs/out-smt-bridge)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](../LICENSE-MIT)
 
 Ergonomic, zero-dependency Rust interface to SMT solvers.
@@ -16,11 +16,11 @@ Interfacing with Z3 from Rust usually means either:
 
 ## Solution
 
-`tpt-smt-bridge` is pure Rust with no C dependencies. Build your constraints
+`out-smt-bridge` is pure Rust with no C dependencies. Build your constraints
 using a fluent Rust API, then emit a standards-compliant SMT-LIB2 string.
 
 ```rust
-use tpt_smt_bridge::{SmtSolver, Sort, Expr};
+use out_smt_bridge::{SmtSolver, Sort, Expr};
 
 let mut solver = SmtSolver::new();
 solver.set_logic("QF_LIA");
@@ -49,7 +49,7 @@ println!("{}", solver.emit_check());
 ## Parsing counterexamples
 
 ```rust
-use tpt_smt_bridge::CounterExample;
+use out_smt_bridge::CounterExample;
 
 let model = r#"(model
   (define-fun x () Int 3)
@@ -77,7 +77,7 @@ Conditional: `ite` (if-then-else)
 
 ```toml
 [dependencies]
-tpt-smt-bridge = "0.1"
+out-smt-bridge = "0.1"
 ```
 
 No system libraries required. Bring your own solver binary.

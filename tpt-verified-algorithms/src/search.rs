@@ -1,6 +1,6 @@
 //! Verified binary search with precondition contracts.
 
-use tpt_verify_macros::{ensures, requires};
+use contracts::*;
 
 /// Returns the index of `key` in the sorted slice `slice`, or `None` if absent.
 ///
@@ -28,8 +28,8 @@ use tpt_verify_macros::{ensures, requires};
 /// let bad = [3, 1, 2];
 /// verified_binary_search(&bad, &2);
 /// ```
-#[requires(is_sorted_slice(slice))]
-#[ensures(match result {
+#[debug_requires(is_sorted_slice(slice))]
+#[debug_ensures(match ret {
     Some(i) => slice[i] == *key,
     None => true,
 })]
@@ -47,7 +47,7 @@ pub fn verified_binary_search<T: Ord>(slice: &[T], key: &T) -> Option<usize> {
     None
 }
 
-/// Helper predicate used by the `#[requires]` precondition of [`verified_binary_search`].
+/// Helper predicate used by the `#[debug_requires]` precondition of [`verified_binary_search`].
 ///
 /// Exposed so callers and tooling can reuse the exact sortedness condition.
 pub fn is_sorted_slice<T: PartialOrd>(slice: &[T]) -> bool {

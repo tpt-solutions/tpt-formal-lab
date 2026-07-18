@@ -16,9 +16,10 @@ whose correctness properties are *checked*, not just hoped for:
 - [`is_sorted`] / [`is_permutation`] — building-block predicates.
 - [`verified_sort`] — a sort that, in debug builds, asserts the result is
   sorted **and** a permutation of the input.
-- [`verified_binary_search`] — binary search guarded by `#[requires]` /
-  `#[ensures]` contracts from [`tpt-verify-macros`] (panics in debug if the
-  precondition — a sorted slice — is violated).
+- [`verified_binary_search`] — binary search guarded by `#[debug_requires]` /
+  `#[debug_ensures]` contracts from the [`contracts`](https://crates.io/crates/contracts)
+  crate (panics in debug if the precondition — a sorted slice — is violated;
+  zero-cost in release).
 
 ## Example
 

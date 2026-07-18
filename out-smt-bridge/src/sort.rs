@@ -7,7 +7,7 @@ use std::fmt;
 /// # Example
 ///
 /// ```rust
-/// use tpt_smt_bridge::Sort;
+/// use out_smt_bridge::Sort;
 ///
 /// assert_eq!(Sort::Int.to_smtlib2(), "Int");
 /// assert_eq!(Sort::BitVec(32).to_smtlib2(), "(_ BitVec 32)");
@@ -32,7 +32,7 @@ impl Sort {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::Sort;
+    /// use out_smt_bridge::Sort;
     ///
     /// assert_eq!(Sort::Bool.to_smtlib2(), "Bool");
     /// assert_eq!(Sort::Real.to_smtlib2(), "Real");

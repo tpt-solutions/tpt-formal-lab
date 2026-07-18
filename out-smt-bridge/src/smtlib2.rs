@@ -10,7 +10,7 @@ use crate::expr::{Expr, ExprInner};
 /// # Example
 ///
 /// ```rust
-/// use tpt_smt_bridge::{Expr, Sort, emit_smtlib2};
+/// use out_smt_bridge::{Expr, Sort, emit_smtlib2};
 ///
 /// let x = Expr::var("x", Sort::Int);
 /// let constraint = Expr::gt(x, Expr::int(0));

@@ -14,4 +14,4 @@ readme = "README.md"
 exclude = ["/spec.txt", "/.github"]
 
 [dependencies]
-tpt-verify-macros = { workspace = true }
+contracts = { workspace = true }

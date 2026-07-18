@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Formula` and `Term` type aliases
 - `AstBuilder`: fluent API for constructing well-typed AST nodes
 
-#### `tpt-verify-macros`
+#### `out-verify-macros`
 - `#[requires(expr)]`: precondition macro
 - `#[ensures(expr)]`: postcondition macro
 - `#[invariant(expr)]`: invariant macro
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `FixedPoint<DENOM>`: const-generic bitwise-deterministic fixed-point type
 - `DeterministicSim<S>`: step-based simulation engine using `BTreeMap` for sorted determinism
 
-#### `tpt-smt-bridge`
+#### `out-smt-bridge`
 - `Sort`: SMT-LIB2 sort enum (`Bool`, `Int`, `Real`, `BitVec`, `Array`)
 - `Expr`: SMT expression AST with full propositional, arithmetic, and quantifier support
 - `SmtSolver`: fluent builder emitting SMT-LIB2 strings
@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `is_sorted` / `is_permutation`: predicate building blocks
 - `verified_sort`: insertion sort with debug-mode sortedness + permutation checks
 - `verified_binary_search`: binary search guarded by `#[requires]` / `#[ensures]`
-- Depends on `tpt-verify-macros`; `#![no_std]` + `alloc`
+- Depends on the external `contracts` crate; `#![no_std]` + `alloc`
 
 #### `tpt-det-proptest`
 - `Xorshift64`: deterministic PRNG

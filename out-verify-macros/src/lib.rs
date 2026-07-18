@@ -2,7 +2,7 @@
 //!
 //! # Overview
 //!
-//! `tpt-verify-macros` provides four attribute macros that let you annotate
+//! `out-verify-macros` provides four attribute macros that let you annotate
 //! functions and loops with formal verification contracts:
 //!
 //! | Macro | Meaning |
@@ -26,7 +26,7 @@
 //! # Usage
 //!
 //! ```rust
-//! use tpt_verify_macros::{requires, ensures, pure};
+//! use out_verify_macros::{requires, ensures, pure};
 //!
 //! #[requires(x > 0)]
 //! #[ensures(result > x)]
@@ -68,7 +68,7 @@ use syn::{parse_macro_input, ItemFn};
 /// # Example
 ///
 /// ```rust
-/// use tpt_verify_macros::requires;
+/// use out_verify_macros::requires;
 ///
 /// #[requires(x > 0.0)]
 /// pub fn sqrt_approx(x: f64) -> f64 {
@@ -121,7 +121,7 @@ pub fn requires(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// # Example
 ///
 /// ```rust
-/// use tpt_verify_macros::ensures;
+/// use out_verify_macros::ensures;
 ///
 /// #[ensures(result >= 0)]
 /// pub fn abs_value(x: i32) -> i32 {
@@ -169,7 +169,7 @@ pub fn ensures(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// # Example
 ///
 /// ```rust
-/// use tpt_verify_macros::invariant;
+/// use out_verify_macros::invariant;
 ///
 /// struct Counter { value: u32, max: u32 }
 ///
@@ -226,7 +226,7 @@ pub fn invariant(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// # Example
 ///
 /// ```rust
-/// use tpt_verify_macros::pure;
+/// use out_verify_macros::pure;
 ///
 /// #[pure]
 /// pub fn square(x: i32) -> i32 {

@@ -1,11 +1,11 @@
 # tpt-formal-lab — Build Checklist
 
 > Optimised for crates.io release at v0.1.0 (all 5 original crates simultaneously).
-> Publish order: tpt-exact-math → tpt-proof-ast → tpt-verify-macros → tpt-deterministic-sim → tpt-smt-bridge
+> Publish order: tpt-exact-math → tpt-proof-ast → out-verify-macros → tpt-deterministic-sim → out-smt-bridge
 >
 > 5 additional crates are in development (see Phases 10–14 below) and are **not**
 > part of the v0.1.0 publish batch — publishing them is a separate future decision.
-> Planned dependency order: tpt-exact-math → tpt-verified-ode; tpt-verify-macros → tpt-verified-algorithms;
+> Planned dependency order: tpt-exact-math → tpt-verified-ode; out-verify-macros → tpt-verified-algorithms;
 > tpt-redundancy, tpt-trace-macros, tpt-det-proptest are standalone.
 
 ---
@@ -75,14 +75,14 @@
 
 ---
 
-## Phase 4 — `tpt-verify-macros`
+## Phase 4 — `out-verify-macros`
 
 ### Setup
-- [x] `tpt-verify-macros/Cargo.toml` — `proc-macro = true`, syn/quote deps
-- [x] `tpt-verify-macros/README.md`
+- [x] `out-verify-macros/Cargo.toml` — `proc-macro = true`, syn/quote deps
+- [x] `out-verify-macros/README.md`
 
 ### Implementation
-- [x] `tpt-verify-macros/src/lib.rs` — all four macros in a single file
+- [x] `out-verify-macros/src/lib.rs` — all four macros in a single file
   - [x] `#[requires(expr)]` — `debug_assert!` + doc injection
   - [x] `#[ensures(expr)]` — wraps return, binds `result`, `debug_assert!`
   - [x] `#[invariant(expr)]` — `debug_assert!` at entry + doc injection
@@ -121,19 +121,19 @@
 
 ---
 
-## Phase 6 — `tpt-smt-bridge`
+## Phase 6 — `out-smt-bridge`
 
 ### Setup
-- [x] `tpt-smt-bridge/Cargo.toml`
-- [x] `tpt-smt-bridge/README.md`
+- [x] `out-smt-bridge/Cargo.toml`
+- [x] `out-smt-bridge/README.md`
 
 ### Implementation
-- [x] `tpt-smt-bridge/src/lib.rs` — `#![deny(missing_docs)]`, re-exports
-- [x] `tpt-smt-bridge/src/sort.rs` — `Sort` enum with `to_smtlib2()`
-- [x] `tpt-smt-bridge/src/expr.rs` — `Expr` with full propositional/arithmetic/quantifier support
-- [x] `tpt-smt-bridge/src/smtlib2.rs` — `emit_smtlib2(expr: &Expr) -> String`
-- [x] `tpt-smt-bridge/src/solver.rs` — `SmtSolver`: `declare_const`, `declare_fun`, `assert`, `set_logic`, `emit_smtlib2`, `emit_check`
-- [x] `tpt-smt-bridge/src/counter_example.rs` — `CounterExample` parser for `(model ...)` output
+- [x] `out-smt-bridge/src/lib.rs` — `#![deny(missing_docs)]`, re-exports
+- [x] `out-smt-bridge/src/sort.rs` — `Sort` enum with `to_smtlib2()`
+- [x] `out-smt-bridge/src/expr.rs` — `Expr` with full propositional/arithmetic/quantifier support
+- [x] `out-smt-bridge/src/smtlib2.rs` — `emit_smtlib2(expr: &Expr) -> String`
+- [x] `out-smt-bridge/src/solver.rs` — `SmtSolver`: `declare_const`, `declare_fun`, `assert`, `set_logic`, `emit_smtlib2`, `emit_check`
+- [x] `out-smt-bridge/src/counter_example.rs` — `CounterExample` parser for `(model ...)` output
 
 ### Tests
 - [x] 22 unit tests (smtlib2 emission, solver builder, counterexample parsing, sort display)
@@ -176,15 +176,15 @@
 - [x] `cargo doc --workspace --no-deps` — zero missing docs
 - [x] `cargo publish --dry-run -p tpt-exact-math`
 - [x] `cargo publish --dry-run -p tpt-proof-ast`
-- [x] `cargo publish --dry-run -p tpt-verify-macros`
+- [x] `cargo publish --dry-run -p out-verify-macros`
 - [ ] `cargo publish --dry-run -p tpt-deterministic-sim` — packaging succeeds; the registry-lookup step for its `tpt-exact-math` dependency can only be verified for real once `tpt-exact-math` is actually published (dry-run can't see unpublished sibling crates)
-- [x] `cargo publish --dry-run -p tpt-smt-bridge`
+- [x] `cargo publish --dry-run -p out-smt-bridge`
 - [ ] Tag git commit `v0.1.0`
 - [ ] `cargo publish -p tpt-exact-math` → wait for index
 - [ ] `cargo publish -p tpt-proof-ast` → wait for index
-- [ ] `cargo publish -p tpt-verify-macros` → wait for index
+- [ ] `cargo publish -p out-verify-macros` → wait for index
 - [ ] `cargo publish -p tpt-deterministic-sim` → wait for index
-- [ ] `cargo publish -p tpt-smt-bridge` → wait for index
+- [ ] `cargo publish -p out-smt-bridge` → wait for index
 - [ ] Verify all 5 crates appear on crates.io and docs.rs
 
 ---
@@ -251,7 +251,7 @@
 ## Phase 13 — `tpt-verified-algorithms`
 
 ### Setup
-- [x] `tpt-verified-algorithms/Cargo.toml` — depends on `tpt-verify-macros`
+- [x] `tpt-verified-algorithms/Cargo.toml` — depends on the external `contracts` crate
 - [x] `tpt-verified-algorithms/README.md`
 
 ### Implementation

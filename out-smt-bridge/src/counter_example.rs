@@ -10,7 +10,7 @@ use std::collections::HashMap;
 /// # Example
 ///
 /// ```rust
-/// use tpt_smt_bridge::CounterExample;
+/// use out_smt_bridge::CounterExample;
 ///
 /// let model = "(model\n  (define-fun x () Int 3)\n  (define-fun y () Int 7)\n)";
 /// let ce = CounterExample::parse(model);
@@ -49,7 +49,7 @@ impl CounterExample {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::CounterExample;
+    /// use out_smt_bridge::CounterExample;
     ///
     /// let model = r#"(model
     ///   (define-fun n () Int 42)
@@ -116,7 +116,7 @@ impl CounterExample {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::CounterExample;
+    /// use out_smt_bridge::CounterExample;
     ///
     /// let ce = CounterExample::parse("(model\n  (define-fun x () Int 5)\n)");
     /// assert_eq!(ce.get_int("x"), Some(5));

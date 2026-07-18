@@ -12,7 +12,7 @@ use std::sync::Arc;
 /// # Example
 ///
 /// ```rust
-/// use tpt_smt_bridge::{Expr, Sort, emit_smtlib2};
+/// use out_smt_bridge::{Expr, Sort, emit_smtlib2};
 ///
 /// let x = Expr::var("x", Sort::Int);
 /// let y = Expr::var("y", Sort::Int);
@@ -81,7 +81,7 @@ impl Expr {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{Expr, emit_smtlib2};
+    /// use out_smt_bridge::{Expr, emit_smtlib2};
     /// assert_eq!(emit_smtlib2(&Expr::bool(true)), "true");
     /// assert_eq!(emit_smtlib2(&Expr::bool(false)), "false");
     /// ```
@@ -94,7 +94,7 @@ impl Expr {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{Expr, emit_smtlib2};
+    /// use out_smt_bridge::{Expr, emit_smtlib2};
     /// assert_eq!(emit_smtlib2(&Expr::int(42)), "42");
     /// ```
     pub fn int(n: i64) -> Self {
@@ -118,7 +118,7 @@ impl Expr {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{Expr, Sort, emit_smtlib2};
+    /// use out_smt_bridge::{Expr, Sort, emit_smtlib2};
     /// let x = Expr::var("x", Sort::Int);
     /// assert_eq!(emit_smtlib2(&x), "x");
     /// ```
@@ -139,7 +139,7 @@ impl Expr {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{Expr, emit_smtlib2};
+    /// use out_smt_bridge::{Expr, emit_smtlib2};
     /// let f = Expr::and(vec![Expr::bool(true), Expr::bool(false)]);
     /// assert_eq!(emit_smtlib2(&f), "(and true false)");
     /// ```
@@ -189,7 +189,7 @@ impl Expr {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{Expr, Sort, emit_smtlib2};
+    /// use out_smt_bridge::{Expr, Sort, emit_smtlib2};
     /// let x = Expr::var("x", Sort::Int);
     /// let f = Expr::gt(x, Expr::int(0));
     /// assert_eq!(emit_smtlib2(&f), "(> x 0)");
@@ -210,7 +210,7 @@ impl Expr {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{Expr, Sort, emit_smtlib2};
+    /// use out_smt_bridge::{Expr, Sort, emit_smtlib2};
     /// let x = Expr::var("x", Sort::Int);
     /// let y = Expr::var("y", Sort::Int);
     /// assert_eq!(emit_smtlib2(&Expr::add(x, y)), "(+ x y)");
@@ -266,7 +266,7 @@ impl Expr {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{Expr, Sort, emit_smtlib2};
+    /// use out_smt_bridge::{Expr, Sort, emit_smtlib2};
     ///
     /// let body = Expr::ge(Expr::var("x", Sort::Int), Expr::int(0));
     /// let f = Expr::forall(vec![("x".into(), Sort::Int)], body);
@@ -288,7 +288,7 @@ impl Expr {
     /// # Example
     ///
     /// ```rust
-    /// use tpt_smt_bridge::{Expr, Sort, emit_smtlib2};
+    /// use out_smt_bridge::{Expr, Sort, emit_smtlib2};
     ///
     /// let cond = Expr::gt(Expr::var("x", Sort::Int), Expr::int(0));
     /// let f = Expr::ite(cond, Expr::int(1), Expr::int(-1));

@@ -2,9 +2,9 @@
 members = [
     "tpt-exact-math",
     "tpt-proof-ast",
-    "tpt-verify-macros",
+    "out-verify-macros",
     "tpt-deterministic-sim",
-    "tpt-smt-bridge",
+    "out-smt-bridge",
     "tpt-redundancy",
     "tpt-verified-ode",
     "tpt-trace-macros",
@@ -29,8 +29,8 @@ num-integer = { version = "0.1", default-features = false }
 proc-macro2 = "1"
 syn = { version = "2", features = ["full"] }
 quote = "1"
+contracts = "0.6.7"
 
 # Workspace crates
 tpt-exact-math = { path = "tpt-exact-math", version = "0.1.0" }
 tpt-proof-ast  = { path = "tpt-proof-ast",  version = "0.1.0" }
-tpt-verify-macros = { path = "tpt-verify-macros", version = "0.1.0" }

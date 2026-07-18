@@ -18,9 +18,9 @@ and formally verified compilers.
 |-------|-------------|-----------|
 | [`tpt-exact-math`](tpt-exact-math/) | Arbitrary-precision rational numbers and interval arithmetic | [![crates.io](https://img.shields.io/crates/v/tpt-exact-math.svg)](https://crates.io/crates/tpt-exact-math) |
 | [`tpt-proof-ast`](tpt-proof-ast/) | Strongly-typed proof-native AST — invalid states are compile errors | [![crates.io](https://img.shields.io/crates/v/tpt-proof-ast.svg)](https://crates.io/crates/tpt-proof-ast) |
-| [`tpt-verify-macros`](tpt-verify-macros/) | Procedural macros for `#[requires]`, `#[ensures]`, `#[invariant]` | [![crates.io](https://img.shields.io/crates/v/tpt-verify-macros.svg)](https://crates.io/crates/tpt-verify-macros) |
+| [`out-verify-macros`](out-verify-macros/) | Procedural macros for `#[requires]`, `#[ensures]`, `#[invariant]` | [![crates.io](https://img.shields.io/crates/v/out-verify-macros.svg)](https://crates.io/crates/out-verify-macros) |
 | [`tpt-deterministic-sim`](tpt-deterministic-sim/) | Bitwise-deterministic simulation engine | [![crates.io](https://img.shields.io/crates/v/tpt-deterministic-sim.svg)](https://crates.io/crates/tpt-deterministic-sim) |
-| [`tpt-smt-bridge`](tpt-smt-bridge/) | Ergonomic Rust → SMT-LIB2 bridge for Z3, CVC5, etc. | [![crates.io](https://img.shields.io/crates/v/tpt-smt-bridge.svg)](https://crates.io/crates/tpt-smt-bridge) |
+| [`out-smt-bridge`](out-smt-bridge/) | Ergonomic Rust → SMT-LIB2 bridge for Z3, CVC5, etc. | [![crates.io](https://img.shields.io/crates/v/out-smt-bridge.svg)](https://crates.io/crates/out-smt-bridge) |
 | [`tpt-redundancy`](tpt-redundancy/) | N-modular redundancy and voting for fault-tolerant systems | [![crates.io](https://img.shields.io/crates/v/tpt-redundancy.svg)](https://crates.io/crates/tpt-redundancy) |
 | [`tpt-verified-ode`](tpt-verified-ode/) | Rigorously verified ODE integration via interval arithmetic | [![crates.io](https://img.shields.io/crates/v/tpt-verified-ode.svg)](https://crates.io/crates/tpt-verified-ode) |
 | [`tpt-trace-macros`](tpt-trace-macros/) | `#[traces("REQ-…")]` macro linking code to requirements | [![crates.io](https://img.shields.io/crates/v/tpt-trace-macros.svg)](https://crates.io/crates/tpt-trace-macros) |
@@ -56,7 +56,7 @@ let stmt = b.forall("x", b.gt(x, b.int_term(0)));
 ### Formal contracts — zero runtime cost in release
 
 ```rust
-use tpt_verify_macros::{requires, ensures};
+use out_verify_macros::{requires, ensures};
 
 #[requires(x > 0)]
 #[ensures(result > 0)]
@@ -76,7 +76,7 @@ let mut sim = DeterministicSim::<Fp>::new();
 ### SMT solver interface — pure Rust, no C
 
 ```rust
-use tpt_smt_bridge::{SmtSolver, Sort, Expr};
+use out_smt_bridge::{SmtSolver, Sort, Expr};
 
 let mut solver = SmtSolver::new();
 solver.declare_const("x", Sort::Int);
@@ -142,9 +142,9 @@ Add the crates you need to your `Cargo.toml`:
 [dependencies]
 tpt-exact-math      = "0.1"
 tpt-proof-ast       = "0.1"
-tpt-verify-macros   = "0.1"
+out-verify-macros   = "0.1"
 tpt-deterministic-sim = "0.1"
-tpt-smt-bridge      = "0.1"
+out-smt-bridge      = "0.1"
 tpt-redundancy      = "0.1"
 tpt-verified-ode    = "0.1"
 tpt-trace-macros    = "0.1"

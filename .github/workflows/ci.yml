@@ -78,6 +78,6 @@ jobs:
       - run: |
           cargo publish --dry-run -p tpt-exact-math
           cargo publish --dry-run -p tpt-proof-ast
-          cargo publish --dry-run -p tpt-verify-macros
+          cargo publish --dry-run -p out-verify-macros
           cargo publish --dry-run -p tpt-deterministic-sim
-          cargo publish --dry-run -p tpt-smt-bridge
+          cargo publish --dry-run -p out-smt-bridge
