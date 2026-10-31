@@ -1,1 +1,8 @@
 msrv = "1.75.0"
+
+# Iteration order of these collections is randomised per process, which would
+# break the byte-for-byte determinism the crates promise. Use the BTree variants.
+disallowed-types = [
+    { path = "std::collections::HashMap", reason = "iteration order is randomised; use BTreeMap" },
+    { path = "std::collections::HashSet", reason = "iteration order is randomised; use BTreeSet" },
+]

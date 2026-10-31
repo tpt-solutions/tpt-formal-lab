@@ -1,0 +1,26 @@
+# cargo-deny configuration: run with `cargo deny check`.
+
+[graph]
+all-features = true
+
+[advisories]
+yanked = "warn"
+
+[licenses]
+# Every licence in the current dependency graph is permissive. Anything new
+# needs a deliberate decision before it is added here.
+allow = [
+    "Apache-2.0",
+    "MIT",
+    "Unicode-3.0",
+]
+confidence-threshold = 0.9
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
