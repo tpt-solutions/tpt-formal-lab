@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/tpt-proof-ast.svg)](https://crates.io/crates/tpt-proof-ast)
 [![docs.rs](https://docs.rs/tpt-proof-ast/badge.svg)](https://docs.rs/tpt-proof-ast)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](../LICENSE-MIT)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
 A strongly-typed, proof-native AST framework for Rust.
 
@@ -37,7 +37,7 @@ let sq   = b.mul(x.clone(), x);               // Term: x * x
 let body = b.implies(pos, b.gt(sq, zero));    // Formula
 let stmt = b.forall("x", body);               // Formula
 
-println!("{stmt}"); // ∀x. ((x > 0) → ((x * x) > 0))
+println!("{stmt}"); // (∀x. ((x > 0) → ((x * x) > 0)))
 ```
 
 ## Kind system
@@ -46,7 +46,7 @@ println!("{stmt}"); // ∀x. ((x > 0) → ((x * x) > 0))
 |------|-----------|---------|
 | `PropKind` | `Formula = Expr<PropKind>` | Logical propositions (true/false) |
 | `TermKind` | `Term = Expr<TermKind>` | Mathematical terms (have a value) |
-| `TypeKind` | `Expr<TypeKind>` | Type-level expressions |
+
 
 ## Usage
 

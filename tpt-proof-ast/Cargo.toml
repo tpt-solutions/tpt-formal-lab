@@ -11,7 +11,9 @@ keywords = ["ast", "formal-verification", "type-safe", "proof", "compiler"]
 categories = ["data-structures", "development-tools"]
 documentation = "https://docs.rs/tpt-proof-ast"
 readme = "README.md"
-exclude = ["/spec.txt", "/.github"]
 
 [dependencies]
 # pure type-system machinery — no external deps
+
+[lints]
+workspace = true

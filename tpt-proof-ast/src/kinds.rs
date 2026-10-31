@@ -4,7 +4,7 @@ use core::fmt;
 
 /// Sealed marker trait for AST node kinds.
 ///
-/// Implemented by [`PropKind`], [`TermKind`], and [`TypeKind`].
+/// Implemented by [`PropKind`] and [`TermKind`].
 /// Cannot be implemented outside this crate (sealed).
 pub trait Kind: private::Sealed + fmt::Debug + Clone + PartialEq {}
 
@@ -20,17 +20,11 @@ pub struct PropKind;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TermKind;
 
-/// Kind marker for **types** (meta-level type expressions in a type theory).
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TypeKind;
-
 impl Kind for PropKind {}
 impl Kind for TermKind {}
-impl Kind for TypeKind {}
 
 mod private {
     pub trait Sealed {}
     impl Sealed for super::PropKind {}
     impl Sealed for super::TermKind {}
-    impl Sealed for super::TypeKind {}
 }
