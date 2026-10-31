@@ -10,8 +10,11 @@ description = "Rigorously verified ODE integration via interval arithmetic and P
 keywords = ["ode", "interval-arithmetic", "verified-computation", "no-std", "formal-verification"]
 categories = ["mathematics", "science", "no-std"]
 documentation = "https://docs.rs/tpt-verified-ode"
+publish = false
 readme = "README.md"
-exclude = ["/spec.txt", "/.github"]
 
 [dependencies]
 tpt-exact-math = { workspace = true }
+
+[lints]
+workspace = true

@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/tpt-verified-ode.svg)](https://crates.io/crates/tpt-verified-ode)
 [![docs.rs](https://docs.rs/tpt-verified-ode/badge.svg)](https://docs.rs/tpt-verified-ode)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](../LICENSE-MIT)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
 Rigorously verified ODE integration via interval arithmetic and Picard iteration.
 
@@ -40,29 +40,38 @@ the enclosure widths shrink monotonically (see [`OdeSolver::step`]).
 ## Example
 
 ```rust
-use tpt_exact_math::Rational;
+use tpt_exact_math::{Interval, Rational};
 use tpt_verified_ode::{IntervalFn, OdeSolver};
 
 // y' = y,  y(0) = 1  →  exact solution y(t) = e^t
 struct Exp;
 impl IntervalFn for Exp {
-    fn eval(&self, _t: &Rational, y: &Rational) -> Rational {
+    fn eval(&self, _t: &Interval, y: &Interval) -> Interval {
         y.clone()
     }
 }
 
 let mut solver = OdeSolver::new(Exp, Rational::from(0), Rational::from(1));
-let h = Rational::from_frac(1, 4); // 0.25 — comfortably small for the contraction
-let (lo, hi) = solver.step(&h);
+let h = Rational::from_frac(1, 4);
+let (lo, hi) = solver.step(&h)?;
 // The enclosure must contain e^0.25 ≈ 1.2840...
 let e_h = Rational::from_frac(1284, 1000);
 assert!(lo <= e_h && e_h <= hi);
 ```
 
+`f` is supplied as an interval extension. Build it from `Interval`'s operators, as
+`y.clone() * (one - y.clone())` does for a logistic right-hand side. Evaluating `f`
+at the corners of the box is unsound for non-monotone `f`.
+
+If a step cannot be verified, the solver halves it and retries. It returns
+`OdeError::NoEnclosure` only after the halving limit is reached, and then its state
+is unchanged. It never returns an unverified box.
+
 ## Features
 
 - `#![no_std]` + `alloc`.
 - No floating point anywhere — `Rational` exact arithmetic throughout.
+- Endpoints are rounded outward to multiples of 2⁻⁶⁴, which keeps denominators bounded.
 
 ## Usage
 

@@ -22,29 +22,38 @@
 //! # Example
 //!
 //! ```rust
-//! use tpt_exact_math::Rational;
+//! use tpt_exact_math::{Interval, Rational};
 //! use tpt_verified_ode::{IntervalFn, OdeSolver};
 //!
-//! // y' = c  (constant slope)
+//! // y' = 2  (constant slope)
 //! struct Const;
 //! impl IntervalFn for Const {
-//!     fn eval(&self, _t: &Rational, _y: &Rational) -> Rational {
-//!         Rational::from(2)
+//!     fn eval(&self, _t: &Interval, _y: &Interval) -> Interval {
+//!         Interval::point(Rational::from(2))
 //!     }
 //! }
 //!
 //! let mut solver = OdeSolver::new(Const, Rational::from(0), Rational::from(0));
-//! let (lo, hi) = solver.step(&Rational::from(1));
+//! let (lo, hi) = solver.step(&Rational::from(1)).unwrap();
 //! assert_eq!(lo, Rational::from(2));
 //! assert_eq!(hi, Rational::from(2));
 //! ```
+//!
+//! # Soundness requirements
+//!
+//! - `f` is supplied as an interval extension: [`IntervalFn::eval`] receives
+//!   interval arguments and must return an enclosure of its range over them.
+//! - A step is returned only after its enclosure has been verified. When the
+//!   whole step cannot be verified, it is halved, and an error is returned if
+//!   no verified enclosure is found. No unverified box is ever returned.
 
 #![no_std]
 #![deny(missing_docs)]
+#![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/tpt-verified-ode/0.1.0/")]
 
 extern crate alloc;
 
 mod solver;
 
-pub use solver::{IntervalFn, OdeSolver};
+pub use solver::{IntervalFn, OdeError, OdeSolver};
