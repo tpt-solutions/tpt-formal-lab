@@ -10,8 +10,11 @@ description = "N-modular redundancy and voting framework for fault-tolerant, saf
 keywords = ["redundancy", "voting", "fault-tolerant", "no-std", "formal-verification"]
 categories = ["no-std", "embedded", "science"]
 documentation = "https://docs.rs/tpt-redundancy"
+publish = false
 readme = "README.md"
-exclude = ["/spec.txt", "/.github"]
 
 [dependencies]
 # pure core-only voting logic — no external deps
+
+[lints]
+workspace = true

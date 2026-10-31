@@ -4,11 +4,12 @@
 //!
 //! [`Replicated`] holds `N` independent copies of a value produced by redundant
 //! channels (e.g. triple-modular redundancy). A family of voting functions
-//! decides the agreed value even when up to `floor(N/2)` channels are faulty:
+//! decides the agreed value:
 //!
 //! - [`Replicated::majority_vote`] — value-based majority voting, distinguishing
 //!   [`VoteResult::Unanimous`], [`VoteResult::Majority`], and
-//!   [`VoteResult::NoMajority`].
+//!   [`VoteResult::NoMajority`]. A strict majority tolerates up to
+//!   `floor((N - 1) / 2)` faulty channels.
 //! - [`Replicated::median_vote`] — the median value (for odd `N`, this rejects
 //!   outliers robustly).
 //! - [`Replicated::bitwise_vote`] — bit-by-bit majority over unsigned integers,
@@ -32,9 +33,10 @@
 
 #![no_std]
 #![deny(missing_docs)]
-#![deny(unsafe_code)]
+#![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/tpt-redundancy/0.1.0/")]
 
+mod approx;
 mod vote;
 
 pub use vote::{Replicated, VoteResult};

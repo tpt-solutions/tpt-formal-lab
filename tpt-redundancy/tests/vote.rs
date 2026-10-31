@@ -48,27 +48,34 @@ fn empty_replication_is_no_majority() {
 fn median_vote_odd_n() {
     let r = Replicated::new([3u32, 1u32, 2u32, 4u32, 9u32]);
     // sorted: [1, 2, 3, 4, 9]; middle index 2 → 3
-    assert_eq!(r.median_vote(), 3u32);
+    assert_eq!(r.median_vote(), Some(3u32));
 }
 
 #[test]
 fn median_rejects_outlier() {
     let r = Replicated::new([10u32, 10u32, 10u32, 10u32, 999u32]);
-    assert_eq!(r.median_vote(), 10u32);
+    assert_eq!(r.median_vote(), Some(10u32));
 }
 
 #[test]
 fn median_vote_known_array() {
     let r = Replicated::new([5u32, 1u32, 3u32]);
-    assert_eq!(r.median_vote(), 3u32);
+    assert_eq!(r.median_vote(), Some(3u32));
+}
+
+#[test]
+fn median_of_no_channels_is_none() {
+    let r: Replicated<u32, 0> = Replicated::new([]);
+    assert_eq!(r.median_vote(), None);
 }
 
 #[test]
 fn order_statistic_matches() {
     let r = Replicated::new([3u32, 1u32, 2u32]);
-    assert_eq!(r.order_statistic(0), 1u32);
-    assert_eq!(r.order_statistic(1), 2u32);
-    assert_eq!(r.order_statistic(2), 3u32);
+    assert_eq!(r.order_statistic(0), Some(1u32));
+    assert_eq!(r.order_statistic(1), Some(2u32));
+    assert_eq!(r.order_statistic(2), Some(3u32));
+    assert_eq!(r.order_statistic(3), None);
 }
 
 #[test]
