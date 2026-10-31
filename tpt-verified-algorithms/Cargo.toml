@@ -10,8 +10,11 @@ description = "Verified sorting and searching with debug-mode contract checks"
 keywords = ["algorithms", "sorting", "binary-search", "verification", "no-std"]
 categories = ["algorithms", "no-std", "science"]
 documentation = "https://docs.rs/tpt-verified-algorithms"
+publish = false
 readme = "README.md"
-exclude = ["/spec.txt", "/.github"]
 
 [dependencies]
-contracts = { workspace = true }
+out-verify-macros = { workspace = true }
+
+[lints]
+workspace = true

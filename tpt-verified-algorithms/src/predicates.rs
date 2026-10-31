@@ -49,3 +49,22 @@ pub fn is_permutation<T: PartialEq>(a: &[T], b: &[T]) -> bool {
     }
     true
 }
+
+/// Returns `true` if `compare` puts every adjacent pair of `slice` in non-decreasing order.
+///
+/// # Example
+///
+/// ```rust
+/// use tpt_verified_algorithms::is_sorted_by;
+///
+/// assert!(is_sorted_by(&[3, 2, 1], |a, b| b.cmp(a)));
+/// assert!(!is_sorted_by(&[1, 2, 3], |a, b| b.cmp(a)));
+/// ```
+pub fn is_sorted_by<T, F: FnMut(&T, &T) -> core::cmp::Ordering>(
+    slice: &[T],
+    mut compare: F,
+) -> bool {
+    slice
+        .windows(2)
+        .all(|w| compare(&w[0], &w[1]) != core::cmp::Ordering::Greater)
+}

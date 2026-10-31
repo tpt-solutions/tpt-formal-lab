@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/tpt-verified-algorithms.svg)](https://crates.io/crates/tpt-verified-algorithms)
 [![docs.rs](https://docs.rs/tpt-verified-algorithms/badge.svg)](https://docs.rs/tpt-verified-algorithms)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](../LICENSE-MIT)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
 Verified sorting and searching with debug-mode contract checks.
 

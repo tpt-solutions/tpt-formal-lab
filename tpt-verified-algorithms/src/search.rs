@@ -1,15 +1,22 @@
 //! Verified binary search with precondition contracts.
 
-use contracts::*;
+use out_verify_macros::{ensures, requires};
 
-/// Returns the index of `key` in the sorted slice `slice`, or `None` if absent.
+/// Returns the index of an element equal to `key` in the sorted slice `slice`,
+/// or `None` if `key` is absent.
 ///
 /// The slice must be sorted in non-decreasing order; this is a **precondition**.
 /// In debug builds, violating it panics. In release builds the precondition is
 /// unchecked (zero cost) and the result is unspecified for unsorted input.
 ///
-/// When `key` is present, the returned index satisfies
-/// `slice[index] == key` (**postcondition**). When absent, `None` is returned.
+/// **Postcondition**: when `key` is present, the returned index satisfies
+/// `slice[index] == key`. When `key` is absent, `None` is returned, and no
+/// element of `slice` equals `key`.
+///
+/// **Duplicate keys**: when `key` occurs more than once, the returned index is
+/// that of *some* matching element, not necessarily the first or the last. Use
+/// [`lower_bound`] or [`upper_bound`] to locate the boundaries of a run of
+/// equal elements.
 ///
 /// # Example
 ///
@@ -21,17 +28,13 @@ use contracts::*;
 /// assert_eq!(verified_binary_search(&data, &6), None);
 /// ```
 ///
-/// ```should_panic
-/// use tpt_verified_algorithms::verified_binary_search;
-///
-/// // Precondition violation: slice is not sorted.
-/// let bad = [3, 1, 2];
-/// verified_binary_search(&bad, &2);
-/// ```
-#[debug_requires(is_sorted_slice(slice))]
-#[debug_ensures(match ret {
+/// Violating the precondition is covered by the integration tests, which are
+/// gated on `debug_assertions`. Doctests do not reliably match the profile
+/// the library was built with, so they are not used for it.
+#[requires(is_sorted_slice(slice))]
+#[ensures(match result {
     Some(i) => slice[i] == *key,
-    None => true,
+    None => !slice.contains(key),
 })]
 pub fn verified_binary_search<T: Ord>(slice: &[T], key: &T) -> Option<usize> {
     let mut lo = 0usize;
@@ -47,9 +50,76 @@ pub fn verified_binary_search<T: Ord>(slice: &[T], key: &T) -> Option<usize> {
     None
 }
 
-/// Helper predicate used by the `#[debug_requires]` precondition of [`verified_binary_search`].
+/// Returns the index of the first element that is **not less than** `key`.
 ///
-/// Exposed so callers and tooling can reuse the exact sortedness condition.
-pub fn is_sorted_slice<T: PartialOrd>(slice: &[T]) -> bool {
+/// This is the insertion point that keeps `slice` sorted. It is `slice.len()`
+/// when every element is less than `key`.
+///
+/// # Precondition
+///
+/// `slice` is sorted in non-decreasing order. In debug builds, violating this
+/// panics.
+///
+/// # Example
+///
+/// ```rust
+/// use tpt_verified_algorithms::lower_bound;
+///
+/// let data = [1, 2, 2, 2, 5];
+/// assert_eq!(lower_bound(&data, &2), 1);
+/// assert_eq!(lower_bound(&data, &3), 4);
+/// assert_eq!(lower_bound(&data, &9), 5);
+/// ```
+#[requires(is_sorted_slice(slice))]
+#[ensures(result == 0 || slice[result - 1] < *key)]
+#[ensures(result == slice.len() || slice[result] >= *key)]
+pub fn lower_bound<T: Ord>(slice: &[T], key: &T) -> usize {
+    partition(slice, |x| x < key)
+}
+
+/// Returns the index of the first element that is **greater than** `key`.
+///
+/// It is `slice.len()` when no element is greater than `key`. The elements equal
+/// to `key` occupy `lower_bound(slice, key)..upper_bound(slice, key)`.
+///
+/// # Precondition
+///
+/// `slice` is sorted in non-decreasing order. In debug builds, violating this
+/// panics.
+///
+/// # Example
+///
+/// ```rust
+/// use tpt_verified_algorithms::upper_bound;
+///
+/// let data = [1, 2, 2, 2, 5];
+/// assert_eq!(upper_bound(&data, &2), 4);
+/// assert_eq!(upper_bound(&data, &0), 0);
+/// ```
+#[requires(is_sorted_slice(slice))]
+#[ensures(result == 0 || slice[result - 1] <= *key)]
+#[ensures(result == slice.len() || slice[result] > *key)]
+pub fn upper_bound<T: Ord>(slice: &[T], key: &T) -> usize {
+    partition(slice, |x| x <= key)
+}
+
+/// Returns the length of the longest prefix of `slice` for which `pred` holds.
+/// `pred` must be monotone: once it is false, it stays false.
+fn partition<T>(slice: &[T], pred: impl Fn(&T) -> bool) -> usize {
+    let mut lo = 0usize;
+    let mut hi = slice.len();
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2;
+        if pred(&slice[mid]) {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+    lo
+}
+
+/// Helper predicate used by the `#[requires]` preconditions above.
+fn is_sorted_slice<T: PartialOrd>(slice: &[T]) -> bool {
     crate::predicates::is_sorted(slice)
 }
