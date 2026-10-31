@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/tpt-trace-macros.svg)](https://crates.io/crates/tpt-trace-macros)
 [![docs.rs](https://docs.rs/tpt-trace-macros/badge.svg)](https://docs.rs/tpt-trace-macros)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](../LICENSE-MIT)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
 The `#[traces("REQ-…")]` attribute macro — link code to the requirements it implements.
 

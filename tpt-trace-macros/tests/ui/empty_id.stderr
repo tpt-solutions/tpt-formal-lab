@@ -1,0 +1,5 @@
+error: requirement id must not be empty
+ --> tests/ui/empty_id.rs:3:20
+  |
+3 | #[traces("REQ-OK", "")]
+  |                    ^^

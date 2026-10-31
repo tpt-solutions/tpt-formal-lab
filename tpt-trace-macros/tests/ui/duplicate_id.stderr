@@ -1,0 +1,5 @@
+error: duplicate requirement id `REQ-A`
+ --> tests/ui/duplicate_id.rs:3:19
+  |
+3 | #[traces("REQ-A", "REQ-A")]
+  |                   ^^^^^^^

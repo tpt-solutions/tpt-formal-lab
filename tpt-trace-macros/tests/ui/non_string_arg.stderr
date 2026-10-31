@@ -1,0 +1,5 @@
+error: #[traces] expects string-literal requirement ids
+ --> tests/ui/non_string_arg.rs:3:10
+  |
+3 | #[traces(42)]
+  |          ^^
