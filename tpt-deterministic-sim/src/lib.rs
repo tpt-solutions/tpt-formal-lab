@@ -19,8 +19,9 @@
 //!
 //! # Feature flags
 //!
-//! - `exact-math` — enables integration with [`tpt-exact-math`](https://docs.rs/tpt-exact-math)
-//!   for lossless `Rational` arithmetic instead of fixed-point.
+//! - `exact-math` — adds [`FixedPoint::to_rational`] and [`FixedPoint::from_rational`],
+//!   which convert between fixed-point values and [`tpt-exact-math`](https://docs.rs/tpt-exact-math)
+//!   `Rational`s. Simulation state stays fixed-point.
 //!
 //! # Quick start
 //!
@@ -35,7 +36,7 @@
 //! let id = sim.spawn(Fp::from_int(10));
 //!
 //! // Register a system that doubles the entity's value each step
-//! sim.add_system("double", |entities| {
+//! sim.add_system("double", |entities, _ctx| {
 //!     for val in entities.values_mut() {
 //!         *val = *val + *val;
 //!     }
@@ -46,11 +47,11 @@
 //! ```
 
 #![deny(missing_docs)]
-#![deny(unsafe_code)]
+#![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/tpt-deterministic-sim/0.1.0/")]
 
 mod fixed_point;
 mod sim;
 
 pub use fixed_point::FixedPoint;
-pub use sim::{DeterministicSim, EntityId};
+pub use sim::{DeterministicSim, Entities, EntityId, SimContext, Snapshot};
