@@ -77,20 +77,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "out-smt-bridge"
-version = "0.1.0"
-
-[[package]]
-name = "out-verify-macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
- "trybuild",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.107"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -236,18 +222,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06bdbd8cfc056b8d2e2e85f29b56a3bdbecb527cef81eb39e3e7b98af4652770"
 
 [[package]]
-name = "tpt-det-proptest"
+name = "tpt-fl-det-proptest"
 version = "0.1.0"
 
 [[package]]
-name = "tpt-deterministic-sim"
+name = "tpt-fl-deterministic-sim"
 version = "0.1.0"
 dependencies = [
- "tpt-exact-math",
+ "tpt-fl-exact-math",
 ]
 
 [[package]]
-name = "tpt-exact-math"
+name = "tpt-fl-exact-math"
 version = "0.1.0"
 dependencies = [
  "num-bigint",
@@ -256,15 +242,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "tpt-proof-ast"
+name = "tpt-fl-proof-ast"
 version = "0.1.0"
 
 [[package]]
-name = "tpt-redundancy"
+name = "tpt-fl-redundancy"
 version = "0.1.0"
 
 [[package]]
-name = "tpt-trace-macros"
+name = "tpt-fl-smt-bridge"
+version = "0.1.0"
+
+[[package]]
+name = "tpt-fl-trace-macros"
 version = "0.1.0"
 dependencies = [
  "proc-macro2",
@@ -274,17 +264,27 @@ dependencies = [
 ]
 
 [[package]]
-name = "tpt-verified-algorithms"
+name = "tpt-fl-verified-algorithms"
 version = "0.1.0"
 dependencies = [
- "out-verify-macros",
+ "tpt-fl-verify-macros",
 ]
 
 [[package]]
-name = "tpt-verified-ode"
+name = "tpt-fl-verified-ode"
 version = "0.1.0"
 dependencies = [
- "tpt-exact-math",
+ "tpt-fl-exact-math",
+]
+
+[[package]]
+name = "tpt-fl-verify-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+ "trybuild",
 ]
 
 [[package]]

@@ -1,0 +1,28 @@
+[package]
+name = "tpt-fl-trace-macros"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Attribute macro that traces which requirements a function implements"
+keywords = ["tracing", "requirements", "macros", "procedural-macro", "documentation"]
+categories = ["development-tools::procedural-macro-helpers", "development-tools"]
+documentation = "https://docs.rs/tpt-fl-trace-macros"
+publish = false
+readme = "README.md"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = { workspace = true }
+syn = { workspace = true }
+quote = { workspace = true }
+
+[dev-dependencies]
+trybuild = "1"
+
+[lints]
+workspace = true

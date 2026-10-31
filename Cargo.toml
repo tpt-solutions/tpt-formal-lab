@@ -1,15 +1,15 @@
 [workspace]
 members = [
-    "tpt-exact-math",
-    "tpt-proof-ast",
-    "out-verify-macros",
-    "tpt-deterministic-sim",
-    "out-smt-bridge",
-    "tpt-redundancy",
-    "tpt-verified-ode",
-    "tpt-trace-macros",
-    "tpt-verified-algorithms",
-    "tpt-det-proptest",
+    "tpt-fl-exact-math",
+    "tpt-fl-proof-ast",
+    "tpt-fl-verify-macros",
+    "tpt-fl-deterministic-sim",
+    "tpt-fl-smt-bridge",
+    "tpt-fl-redundancy",
+    "tpt-fl-verified-ode",
+    "tpt-fl-trace-macros",
+    "tpt-fl-verified-algorithms",
+    "tpt-fl-det-proptest",
 ]
 resolver = "2"
 
@@ -29,11 +29,11 @@ num-integer = { version = "0.1", default-features = false }
 proc-macro2 = "1"
 syn = { version = "2", features = ["full"] }
 quote = "1"
-out-verify-macros = { path = "out-verify-macros", version = "0.1.0" }
+tpt-fl-verify-macros = { path = "tpt-fl-verify-macros", version = "0.1.0" }
 
 # Workspace crates
-tpt-exact-math = { path = "tpt-exact-math", version = "0.1.0" }
-tpt-proof-ast  = { path = "tpt-proof-ast",  version = "0.1.0" }
+tpt-fl-exact-math = { path = "tpt-fl-exact-math", version = "0.1.0" }
+tpt-fl-proof-ast  = { path = "tpt-fl-proof-ast",  version = "0.1.0" }
 
 [workspace.lints.clippy]
 disallowed_types = "deny"

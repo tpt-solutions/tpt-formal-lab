@@ -1,0 +1,20 @@
+[package]
+name = "tpt-fl-redundancy"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "N-modular redundancy and voting framework for fault-tolerant, safety-critical Rust"
+keywords = ["redundancy", "voting", "fault-tolerant", "no-std", "formal-verification"]
+categories = ["no-std", "embedded", "science"]
+documentation = "https://docs.rs/tpt-fl-redundancy"
+publish = false
+readme = "README.md"
+
+[dependencies]
+# pure core-only voting logic — no external deps
+
+[lints]
+workspace = true
