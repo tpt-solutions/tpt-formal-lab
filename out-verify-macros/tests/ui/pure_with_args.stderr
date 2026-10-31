@@ -1,0 +1,5 @@
+error: #[pure] takes no arguments
+ --> tests/ui/pure_with_args.rs:3:8
+  |
+3 | #[pure(extra)]
+  |        ^^^^^

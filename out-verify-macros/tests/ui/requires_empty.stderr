@@ -1,0 +1,7 @@
+error: #[requires] expects a condition
+ --> tests/ui/requires_empty.rs:3:1
+  |
+3 | #[requires]
+  | ^^^^^^^^^^^
+  |
+  = note: this error originates in the attribute macro `requires` (in Nightly builds, run with -Z macro-backtrace for more info)

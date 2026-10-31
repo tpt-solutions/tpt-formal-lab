@@ -1,0 +1,5 @@
+error: #[ensures] closure takes exactly one parameter: the result
+ --> tests/ui/ensures_two_params.rs:3:12
+  |
+3 | #[ensures(|a, b| a == b)]
+  |            ^^^^

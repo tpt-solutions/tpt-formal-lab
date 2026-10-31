@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/out-verify-macros.svg)](https://crates.io/crates/out-verify-macros)
 [![docs.rs](https://docs.rs/out-verify-macros/badge.svg)](https://docs.rs/out-verify-macros)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](../LICENSE-MIT)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
 Procedural macros for embedding formal verification contracts in Rust code.
 
