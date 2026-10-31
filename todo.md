@@ -301,4 +301,144 @@
 - [x] `#![doc(html_root_url = ...)]` present on lib crates (`tpt-trace-macros` is proc-macro-only and has no lib doc root, which is expected)
 - [x] Each crate's `README.md` has CI/license badges
 - [ ] Commit the working-tree changes for the 5 new crates + supporting edits to `Cargo.toml`/`README.md`/`CHANGELOG.md` (currently untracked/modified, not yet committed)
-- [ ] Decide and record a publish plan for the 5 new crates (currently intentionally excluded from the v0.1.0 batch — see note at top of this file)
+- [x] Decide and record a publish plan for the 5 new crates (publish = false; see README and CHANGELOG) (currently intentionally excluded from the v0.1.0 batch — see note at top of this file)
+
+---
+
+## Phase 17 — Review Fixes: Correctness & Soundness
+
+> From the platform review. Write a failing regression test first, then fix.
+
+### Done
+- [x] CI: workflow triggered on `main` but branch is `master` → now `master`
+- [x] `tpt-exact-math`: `Interval` division panicked for any non-point divisor (reciprocal bounds not swapped); tests added
+
+### `tpt-exact-math`
+- [x] `Interval::checked_div` (returns `Option`/union for zero-straddling divisors)
+- [x] `Rational::to_f64` returns NaN/inf for huge numerators/denominators — rescale before dividing
+- [x] Remove private `Rational::min`/`max` that shadow `Ord::min`/`max`
+- [x] Tests: big values, `recip` of negative, `Hash`/`Ord` consistency, neg×neg multiply
+
+### `tpt-verified-ode`
+- [x] `IntervalFn::eval` takes/returns `Interval` (natural interval extension) — corner-only evaluation is unsound for non-monotone `f`
+- [x] Don't return an unverified box after `MAX_WIDEN`; return `Result<_, NoEnclosure>` and auto-halve `h`
+- [x] Validate `h > 0`
+- [x] Tightening step (`y0 + h·f(T, Y)`) so the state is an end-point enclosure, not the whole-interval hull
+- [x] Dyadic outward rounding to stop rational size blow-up
+- [x] Tests: non-monotone `f`, stiff `f`, non-autonomous `f`, failing fixpoint, width bounds; replace assertion-free `debug_single`
+
+### `tpt-deterministic-sim`
+- [x] `FixedPoint::Mul`/`Div` use `i128` intermediates
+- [x] `checked_*` / `saturating_*` ops; check `from_int`, `Neg`, `abs` (`i64::MIN`)
+- [x] `Display` without `f64::log10` (integer digit count; correct for non-power-of-10 `DENOM`)
+- [x] Compile-time `DENOM > 0` assertion; document truncation rounding
+- [x] Implement the `exact-math` feature or remove it and its doc claims
+- [x] Tests: overflow panics, negative truncation, `Display` for other `DENOM`s, `remove_system`, `despawn`, `get_mut`
+
+### `tpt-redundancy`
+- [x] `median_vote` with `N == 0` panics — return `Option` or reject at compile time
+- [x] Fix docs: majority tolerates `floor((N-1)/2)` faults, not `floor(N/2)`
+- [x] `bitwise_vote` even-N tie silently resolves to 0 — document or report
+- [x] Seal `BitNarrow` (docs say sealed, trait is public)
+
+### `tpt-det-proptest`
+- [x] Shrinker linear-scans the whole range (hang on wide ranges) — derive index from the failing value, use halving shrinker, verify final candidate still fails
+- [x] Remove modulo bias (Lemire / rejection sampling); `AnyBool` uses top bit
+- [x] Mix seeds through splitmix64 (seeds `0` and golden-ratio collide)
+- [x] `at_index` lower-bound check; inclusive ranges (`MAX` currently ungeneratable)
+- [x] `usize`/`isize`/`i128`/`u128` support (docs claim all primitive ints)
+- [x] Catch panicking properties (`catch_unwind` under `std`) or document the limitation
+- [x] Tests: non-monotone failure set, zero seed, full-width ranges, bias check
+
+### `tpt-proof-ast`
+- [x] Parenthesise quantifiers in `Display` (scope is ambiguous inside `∧`/`∨`)
+- [x] Remove or implement `Expr<TypeKind>` (can't be constructed today)
+- [x] Correct "const generics" claim in docs
+- [x] Tests: `exists`, `iff`, comparisons, `sub`/`div`/`neg`, `tru`/`fals`, `Debug`, reverse compile-fail (Term passed where Formula expected)
+
+### `out-smt-bridge`
+- [x] Real s-expression tokenizer for `CounterExample` (multi-line Z3 `define-fun`, quoted symbols, `define-fun` with args, compound sorts, `#x`/`#b`/`(_ bvN w)`, `(- 1)`, `(/ 1 2)`)
+- [x] `SatResult { Sat(model), Unsat, Unknown(reason) }`; surface `(error ...)`
+- [x] Negative reals emitted as `(- 3.0)` / `(/ (- 1.0) 2.0)`; reject zero denominator
+- [x] Separate `idiv` / `rdiv` (`Div` always emits `/`)
+- [x] `quote_symbol()` for names; validate `set_logic` argument (command injection)
+- [x] Normalise empty / single-arg `and`/`or`/`add`/`mul`/`distinct`
+- [x] Mask bitvector literals to width; reject width 0
+- [x] Only emit `(get-model)` when appropriate; add `(set-option :produce-models true)`
+- [x] Reject empty quantifier binder lists
+- [x] `i128`/bignum integer values in `CounterExample`
+- [x] Tests: negative/real emission, all operators, quoting, quantifiers, real Z3/cvc5 transcripts; tighten the weak `full_problem` assertion
+
+### `out-verify-macros`
+- [x] `#[ensures]`: drop `move` on the closure, give it the declared return type (non-Copy args, `&mut self`, `?`)
+- [x] `#[ensures]` support for `async fn` / `const fn` / `unsafe fn`
+- [x] `old(expr)` support; renameable / hygienic `result` binding
+- [x] `#[invariant]` also checked at exit; loop-invariant function-like macro
+- [x] Contracts on trait methods / impl items — works on methods in `impl` blocks; trait default methods with bodies are NOT supported yet
+- [x] Nicer errors (empty args, non-function items)
+- [x] Tests: generics, `&mut self`, early return, `?`, async, stacked attributes, param named `result`, trybuild compile-fail
+
+### `tpt-trace-macros`
+- [x] Replace `panic!` with spanned `syn::Error`; reject empty strings, duplicate IDs, zero args
+- [x] Raw identifiers (`r#type`) panic when building the const name — use `unraw()`
+- [x] Support methods in `impl` blocks (associated const); avoid name collisions; honour fn visibility
+- [x] Tests: raw idents, methods, generics, invalid args (trybuild), private fns
+
+### `tpt-verified-algorithms`
+- [x] Binary-search postcondition: `None => !slice.contains(key)` (currently vacuous)
+- [x] Gate `should_panic` tests / doctests on `cfg(debug_assertions)` (they fail under `--release`)
+- [x] Re-export or privatise `is_sorted_slice`
+- [x] Document duplicate-key behaviour; add `lower_bound` / `upper_bound`
+- [x] Tests: stability, multiplicity mismatch in `is_permutation`, large / all-equal inputs
+
+---
+
+## Phase 18 — Review Fixes: CI, Repo Hygiene & Release Readiness
+
+- [x] CI: remove or restructure the `tpt-deterministic-sim` publish dry-run until `tpt-exact-math` is on crates.io
+- [x] CI: MSRV job (Rust 1.75) incl. transitive deps (`contracts`, `syn`)
+- [x] CI: `cargo test --workspace --release`
+- [x] CI: `--no-default-features` and `tpt-deterministic-sim --features exact-math` runs
+- [x] CI: `no_std` thumbv7em build for all `no_std` crates (redundancy, verified-ode, verified-algorithms, det-proptest)
+- [x] CI: `cargo-deny` / `cargo-audit` + `deny.toml`
+- [ ] CI: `cargo-semver-checks`; optional coverage (`cargo-llvm-cov`) — semver-checks needs a published baseline; not added yet
+- [x] CI: `continue-on-error` for nightly
+- [ ] Verify CI actually triggers on push to `master` — config checked; needs a real push to confirm
+- [ ] Commit `Cargo.lock` — no longer gitignored; the commit itself is pending
+- [x] `#![forbid(unsafe_code)]` in every crate (missing from det-proptest, verified-algorithms, verified-ode)
+- [x] `[workspace.lints]` section; extend `.clippy.toml` (e.g. `disallowed-methods` for determinism)
+- [x] `publish = false` on the 5 crates not in the v0.1.0 batch until a publish plan exists
+- [x] Fix no-op `exclude = ["/spec.txt", "/.github"]` in crate manifests
+- [x] Per-crate README badge links `../LICENSE-MIT` → `LICENSE-MIT` (broken on crates.io)
+- [x] Root README: "five focused crates" → ten; note unpublished crates' badges 404 until publish
+- [x] CHANGELOG: reconcile 0.1.0 entry with the 5-crate publish batch; add compare-link footer
+- [x] Consider `tpt-verified-algorithms` dogfooding `out-verify-macros` instead of external `contracts`
+- [x] `todo.md` housekeeping: Phase 8 "CI activated" and Phase 16 "commit" items are stale; confirm `tpt-proof-ast` compile-fail test exists
+
+---
+
+## Phase 19 — Missing Features (prioritised)
+
+- [x] `out-smt-bridge`: `check_sat()` spawning `z3 -in` / `cvc5 --lang smt2` with timeout and stderr capture (integration tests skip when solver absent)
+- [x] `out-smt-bridge`: arrays (`select`/`store`), bitvector ops, strings (with escaping), function application, `let` sharing, `push`/`pop`, unsat cores, `get-value`
+- [x] `out-smt-bridge`: optional sort checking (`sort_of` / `typecheck`)
+- [ ] `tpt-proof-ast` → `out-smt-bridge` bridge (`From<Formula>`), plus visitor, substitution, free-variable analysis, predicate/function application, sorted binders — visitor, substitution, free variables, function and predicate application, and sorted binders are done. The bridge is NOT done: it would make tpt-proof-ast depend on out-smt-bridge, which changes the publish order and the dry-run check (needs a decision).
+- [x] `tpt-deterministic-sim`: `SimContext` (step count, `dt`, spawn/despawn queues), state hashing, snapshot/restore, `FnMut` systems
+- [x] `tpt-exact-math`: `FromStr`, `from_f64`, `pow`, `floor`/`ceil`/`round`, `&`-ref operator impls, wider `From<int>` impls, `Interval::{intersect, abs, sqr, pow, bisect}`
+- [x] `tpt-redundancy`: `approx_vote` (float tolerance), faulty-channel report, `plurality_vote`
+- [x] `tpt-verified-algorithms`: `sort_by` / `sort_by_key`, O(n log n) stable sort, Kani harnesses — Kani harnesses are written under `cfg(kani)` but not run (Kani is not installed here)
+- [ ] `tpt-verified-ode`: vector systems, adaptive step size, higher-order (Taylor-model) enclosures — adaptive step size is done as `solve_until`. Vector systems and Taylor-model enclosures are NOT done.
+- [x] `tpt-det-proptest`: tuple / `Vec` / `Option` strategies and combinators (`map`, `filter`, `one_of`)
+
+---
+
+## Phase 20 — Innovation Ideas (candidates, not committed)
+
+- [ ] `tpt-assurance-case`: join `#[traces]`, contracts and verification results into a generated assurance case (GSN/SACM, traceability matrix); needs a `linkme`/`inventory` registry in `tpt-trace-macros`
+- [ ] Contract lowering: `#[requires]`/`#[ensures]` also emit Kani/Prusti/Creusot attributes under `cfg`; optionally discharge simple arithmetic contracts via `out-smt-bridge` + Z3 at test time
+- [ ] `DeterministicSim` record/replay: hash-chained step log, first-divergence bisection, golden-hash CI across x86/ARM/RISC-V (qemu)
+- [ ] Numerical monitor: run `tpt-verified-ode` alongside a float integrator and flag steps where the float result leaves the rigorous enclosure
+- [ ] TMR-in-sim: `tpt-redundancy` voters inside `DeterministicSim` with deterministic fault-injection schedules from `tpt-det-proptest`
+- [ ] Stateful / model-based testing in `tpt-det-proptest` (command sequences, printed replay seeds)
+- [ ] Proof certificates: keep Z3/cvc5 unsat proofs with tests; small independent checker for the exact-rational / interval fragment
+- [ ] Benchmarks backing the "existing crates are slow" claim in `spec.txt`

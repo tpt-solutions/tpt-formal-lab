@@ -7,7 +7,7 @@
 
 ---
 
-`tpt-formal-lab` is a workspace of five focused crates for developers building
+`tpt-formal-lab` is a workspace of ten focused crates for developers building
 systems where floating-point errors, non-determinism, or logical flaws are
 **unacceptable** — flight control, financial engines, cryptographic protocols,
 and formally verified compilers.
@@ -26,6 +26,11 @@ and formally verified compilers.
 | [`tpt-trace-macros`](tpt-trace-macros/) | `#[traces("REQ-…")]` macro linking code to requirements | [![crates.io](https://img.shields.io/crates/v/tpt-trace-macros.svg)](https://crates.io/crates/tpt-trace-macros) |
 | [`tpt-verified-algorithms`](tpt-verified-algorithms/) | Verified sorting and searching with debug-mode contract checks | [![crates.io](https://img.shields.io/crates/v/tpt-verified-algorithms.svg)](https://crates.io/crates/tpt-verified-algorithms) |
 | [`tpt-det-proptest`](tpt-det-proptest/) | Deterministic property-based testing with bisection shrinking | [![crates.io](https://img.shields.io/crates/v/tpt-det-proptest.svg)](https://crates.io/crates/tpt-det-proptest) |
+
+Five crates (`tpt-exact-math`, `tpt-proof-ast`, `out-verify-macros`,
+`tpt-deterministic-sim`, `out-smt-bridge`) are in the planned v0.1.0 crates.io
+release. The other five are `publish = false` until a publish plan exists, so
+their crates.io badges show as missing until they are published.
 
 ---
 
