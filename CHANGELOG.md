@@ -10,55 +10,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 The v0.1.0 release batch is the five crates marked below as publishable:
-`tpt-exact-math`, `tpt-proof-ast`, `out-verify-macros`, `tpt-deterministic-sim`
-and `out-smt-bridge`. The other five crates are `publish = false` until a
+`tpt-fl-exact-math`, `tpt-fl-proof-ast`, `tpt-fl-verify-macros`, `tpt-fl-deterministic-sim`
+and `tpt-fl-smt-bridge`. The other five crates are `publish = false` until a
 publish plan exists (see `todo.md`, Phase 16).
 
 ### Changed (breaking, pre-release)
 
-- `tpt-exact-math`: `Interval` division by a zero-straddling divisor still
+- `tpt-fl-exact-math`: `Interval` division by a zero-straddling divisor still
   panics, but `Interval::checked_div` now returns `None` in that case.
   `Rational::to_f64` no longer returns NaN for large numerators or denominators.
-- `tpt-verified-ode`: `IntervalFn::eval` takes and returns `Interval`. `step`,
+- `tpt-fl-verified-ode`: `IntervalFn::eval` takes and returns `Interval`. `step`,
   `solve` and `a_priori` return `Result<_, OdeError>`. A step that cannot be
   verified is halved, and no unverified box is returned.
-- `tpt-deterministic-sim`: `FixedPoint` multiplication and division use `i128`
+- `tpt-fl-deterministic-sim`: `FixedPoint` multiplication and division use `i128`
   intermediates and panic on overflow of the result. `checked_*` and
   `saturating_*` methods are added. The `exact-math` feature now provides
   `to_rational` and `from_rational`, and no longer changes the simulation type.
   `add_system` takes `FnMut(&mut entities, &mut SimContext)`.
-- `tpt-redundancy`: `median_vote` and `order_statistic` return `Option<T>`.
+- `tpt-fl-redundancy`: `median_vote` and `order_statistic` return `Option<T>`.
   `BitNarrow` is sealed.
-- `tpt-det-proptest`: `Strategy` index space is `u128`. `IntRange::inclusive` is
+- `tpt-fl-det-proptest`: `Strategy` index space is `u128`. `IntRange::inclusive` is
   added. Shrinking uses an index lookup instead of a linear scan. Range
   sampling is unbiased, and seeds are mixed through splitmix64.
-- `tpt-proof-ast`: `TypeKind` is removed (it could not be constructed).
+- `tpt-fl-proof-ast`: `TypeKind` is removed (it could not be constructed).
   Quantifiers are parenthesised in `Display`. `ExprNode::Forall` and
   `ExprNode::Exists` now hold a `Binder`, not a bare name.
-- `out-smt-bridge`: `emit_check` emits only `(check-sat)`. Use
+- `tpt-fl-smt-bridge`: `emit_check` emits only `(check-sat)`. Use
   `emit_check_model` for `(get-model)`. `Expr::div` is real division.
   `Expr::idiv` is integer division. `CeValue::Int` holds an `i128`.
-- `out-verify-macros`: `#[invariant]` also checks on exit. Contract attributes
+- `tpt-fl-verify-macros`: `#[invariant]` also checks on exit. Contract attributes
   accept methods and impl items, and work on `async`, `const` and `unsafe`
   functions.
-- `tpt-verified-algorithms`: uses `out-verify-macros` instead of the external
+- `tpt-fl-verified-algorithms`: uses `tpt-fl-verify-macros` instead of the external
   `contracts` crate.
 
 ### Added
 
-#### `tpt-exact-math`
+#### `tpt-fl-exact-math`
 - `Rational::floor`, `ceil`, `round`, `to_i64`, `pow`, `from_f64` (exact)
 - `FromStr` for `Rational` (`a/b`, decimals) and `ParseRationalError`
 - `Interval::checked_div`, `round_outward`, `intersect`, `abs`, `sqr`, `pow`, `bisect`
 - Reference operator impls (`&a + &b` and mixed forms); `From` for `i8`, `i16`,
   `u8`, `u16`, `u32`, `i128`, `u128`
 
-#### `tpt-verified-ode`
+#### `tpt-fl-verified-ode`
 - `OdeError`, outward-rounded endpoints, and a Picard search that tightens the
   enclosure
 - `solve_until`: integrates to an exact end time, halving steps where needed
 
-#### `tpt-deterministic-sim`
+#### `tpt-fl-deterministic-sim`
 - Checked and saturating arithmetic on `FixedPoint`
 - `FixedPoint::to_rational` and `from_rational` behind `exact-math`
 - `SimContext`: step index, timestep, and spawn and despawn queues applied after
@@ -66,39 +66,39 @@ publish plan exists (see `todo.md`, Phase 16).
 - `snapshot` / `restore`, and `state_hash` (FNV-1a over little-endian encodings)
 - Systems are `FnMut` and take `(entities, ctx)`
 
-#### `tpt-redundancy`
+#### `tpt-fl-redundancy`
 - `bitwise_vote` documents how even-`N` ties are resolved
 - `approx_vote` (caller-supplied agreement), `plurality_vote`, `faulty_channels`
 
-#### `tpt-det-proptest`
+#### `tpt-fl-det-proptest`
 - `IntRange::inclusive`, support for `usize`, `isize`, `i128` and `u128`
 - Splitmix64 seeding, and unbiased sampling
 - Tuple (2 and 3) strategies, `optional`, `vec_of`, and `StrategyExt::{map, filter}`,
   plus `one_of`
 
-#### `tpt-proof-ast`
+#### `tpt-fl-proof-ast`
 - A reverse `compile_fail` test: a `Term` passed where a `Formula` is expected
 - `Binder` with an optional `BinderSort`; `forall_typed` and `exists_typed`
 - Function and predicate application (`app_term`, `pred`)
 - `walk`, `free_vars`, and capture-avoiding `substitute`
 
-#### `out-verify-macros`
+#### `tpt-fl-verify-macros`
 - `#[ensures(|name| ...)]` names the returned value
 - `old(expr)` in postconditions
 - `loop_invariant!` statement macro
 - Trybuild compile-fail tests for invalid attribute arguments
 
-#### `tpt-trace-macros`
+#### `tpt-fl-trace-macros`
 - Errors reported at the offending token: no ids, non-string, empty, duplicate
 - Raw identifiers, methods in `impl` blocks, and visibility-matching constants
 
-#### `tpt-verified-algorithms`
+#### `tpt-fl-verified-algorithms`
 - `lower_bound`, `upper_bound`
 - `verified_sort_by`, `verified_sort_by_key`, `is_sorted_by`
 - `verified_sort` is now a stable O(n log n) merge sort
 - Kani proof harness under `cfg(kani)` (written, not yet run)
 
-#### `out-smt-bridge`
+#### `tpt-fl-smt-bridge`
 - `check_sat` runs Z3, CVC5 or any SMT-LIB2 program with a timeout
 - `SatResult`, `SolverError`, `Backend`, `parse_unsat_core`
 - Arrays, bit-vector and string operators, `let`, function application
@@ -108,17 +108,17 @@ publish plan exists (see `todo.md`, Phase 16).
 - A real s-expression reader for solver output, with `i128` and `(- N)` support
 
 ### Fixed
-- `tpt-exact-math`: `Interval` division by a non-point divisor (bounds were not
+- `tpt-fl-exact-math`: `Interval` division by a non-point divisor (bounds were not
   swapped for the reciprocal).
 - CI: the workflow triggered on `main`, but the branch is `master`.
-- `tpt-verified-ode`: the old `step` could return a box that was not verified, and
+- `tpt-fl-verified-ode`: the old `step` could return a box that was not verified, and
   its Picard iteration could grow without bound near a blow-up.
-- `out-smt-bridge`: `CounterExample::parse` did not read multi-line solver
+- `tpt-fl-smt-bridge`: `CounterExample::parse` did not read multi-line solver
   output, the form Z3 prints.
 
 ### Not yet published
-- `tpt-redundancy`, `tpt-verified-ode`, `tpt-trace-macros`,
-  `tpt-verified-algorithms`, `tpt-det-proptest` are `publish = false`.
+- `tpt-fl-redundancy`, `tpt-fl-verified-ode`, `tpt-fl-trace-macros`,
+  `tpt-fl-verified-algorithms`, `tpt-fl-det-proptest` are `publish = false`.
 
 ---
 
@@ -129,28 +129,28 @@ The first release covers the five crates of the publish batch. Items in
 
 ### Added
 
-#### `tpt-exact-math`
+#### `tpt-fl-exact-math`
 - `Rational`: arbitrary-precision rational arithmetic backed by `num-bigint`
 - `Interval`: closed-interval arithmetic with monotone propagation
 - `#![no_std]` support (requires `alloc`)
 
-#### `tpt-proof-ast`
+#### `tpt-fl-proof-ast`
 - Kind system: `PropKind` and `TermKind` markers
 - `Expr<K>`: typed AST nodes parameterised over kind
 - `Formula` and `Term` type aliases
 - `AstBuilder`: fluent API for constructing well-typed AST nodes
 
-#### `out-verify-macros`
+#### `tpt-fl-verify-macros`
 - `#[requires(expr)]`: precondition macro
 - `#[ensures(expr)]`: postcondition macro
 - `#[invariant(expr)]`: invariant macro
 - `#[pure]`: side-effect-free marker
 
-#### `tpt-deterministic-sim`
+#### `tpt-fl-deterministic-sim`
 - `FixedPoint<DENOM>`: const-generic bitwise-deterministic fixed-point type
 - `DeterministicSim<S>`: step-based simulation engine using `BTreeMap` for sorted determinism
 
-#### `out-smt-bridge`
+#### `tpt-fl-smt-bridge`
 - `Sort`: SMT-LIB2 sort enum (`Bool`, `Int`, `Real`, `BitVec`, `String`, `Array`)
 - `Expr`: SMT expression AST with propositional, arithmetic, quantifier, array and bit-vector support
 - `SmtSolver`: fluent builder emitting SMT-LIB2 strings, with `check_sat`
@@ -158,8 +158,8 @@ The first release covers the five crates of the publish batch. Items in
 - `emit_smtlib2`: standalone expression serialiser
 
 ### Not part of 0.1.0
-- `tpt-redundancy`, `tpt-verified-ode`, `tpt-trace-macros`,
-  `tpt-verified-algorithms` and `tpt-det-proptest` are `publish = false` and
+- `tpt-fl-redundancy`, `tpt-fl-verified-ode`, `tpt-fl-trace-macros`,
+  `tpt-fl-verified-algorithms` and `tpt-fl-det-proptest` are `publish = false` and
   will be released separately, if at all.
 
 [Unreleased]: https://github.com/tpt-solutions/tpt-formal-lab/commits/master
