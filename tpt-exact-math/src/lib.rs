@@ -35,13 +35,15 @@
 
 #![no_std]
 #![deny(missing_docs)]
-#![deny(unsafe_code)]
+#![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/tpt-exact-math/0.1.0/")]
 
 extern crate alloc;
 
+mod extras;
 mod interval;
 mod rational;
 
+pub use extras::ParseRationalError;
 pub use interval::Interval;
 pub use rational::Rational;

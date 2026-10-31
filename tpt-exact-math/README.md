@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/tpt-exact-math.svg)](https://crates.io/crates/tpt-exact-math)
 [![docs.rs](https://docs.rs/tpt-exact-math/badge.svg)](https://docs.rs/tpt-exact-math)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](../LICENSE-MIT)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
 Arbitrary-precision rational arithmetic and interval arithmetic for Rust.
 

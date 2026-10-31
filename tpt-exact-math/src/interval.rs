@@ -3,6 +3,8 @@
 use core::fmt;
 use core::ops::{Add, Div, Mul, Neg, Sub};
 
+use num_bigint::BigInt;
+
 use crate::Rational;
 
 /// A closed interval `[lo, hi]` over `Rational` values.
@@ -169,6 +171,30 @@ impl Interval {
         };
         Interval { lo, hi }
     }
+
+    /// Returns an interval containing `self` whose bounds are multiples of
+    /// `2^-bits`: the lower bound is rounded down and the upper bound up.
+    ///
+    /// Rounding keeps the enclosure valid while bounding the size of the
+    /// denominators, which otherwise grow without limit in long computations.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use tpt_exact_math::{Interval, Rational};
+    ///
+    /// let x = Interval::new(Rational::from_frac(1, 3), Rational::from_frac(2, 3));
+    /// let r = x.round_outward(2);
+    /// assert_eq!(r.lo(), &Rational::from_frac(1, 4));
+    /// assert_eq!(r.hi(), &Rational::from_frac(3, 4));
+    /// ```
+    pub fn round_outward(&self, bits: usize) -> Interval {
+        let scale = Rational::from(BigInt::from(1) << bits);
+        Interval {
+            lo: (self.lo.clone() * scale.clone()).floor() / scale.clone(),
+            hi: (self.hi.clone() * scale.clone()).ceil() / scale,
+        }
+    }
 }
 
 // ── Arithmetic — monotone interval propagation ────────────────────────────────
@@ -220,6 +246,40 @@ impl Mul for Interval {
     }
 }
 
+impl Interval {
+    /// Divides `self` by `rhs`, returning `None` when `rhs` contains zero.
+    ///
+    /// A divisor that straddles zero gives a quotient that is unbounded or
+    /// splits into two pieces, and a single closed `Interval` cannot represent
+    /// either. Callers that need that case should split the divisor at zero.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use tpt_exact_math::{Interval, Rational};
+    ///
+    /// let x = Interval::new(Rational::from_frac(1, 1), Rational::from_frac(3, 1));
+    /// let straddles = Interval::new(Rational::from_frac(-1, 1), Rational::from_frac(1, 1));
+    /// assert!(x.checked_div(&straddles).is_none());
+    ///
+    /// let half = Interval::point(Rational::from_frac(2, 1));
+    /// let q = x.checked_div(&half).unwrap();
+    /// assert_eq!(q.lo(), &Rational::from_frac(1, 2));
+    /// assert_eq!(q.hi(), &Rational::from_frac(3, 2));
+    /// ```
+    pub fn checked_div(&self, rhs: &Interval) -> Option<Interval> {
+        if rhs.contains(&Rational::zero()) {
+            return None;
+        }
+        // 1/x is decreasing on either side of zero, so the bounds swap.
+        let recip = Interval {
+            lo: rhs.hi.recip(),
+            hi: rhs.lo.recip(),
+        };
+        Some(self.clone() * recip)
+    }
+}
+
 impl Div for Interval {
     type Output = Self;
     /// `[a,b] / [c,d]` — multiplies by the reciprocal interval.
@@ -227,14 +287,13 @@ impl Div for Interval {
     /// # Panics
     ///
     /// Panics if `rhs` contains zero (division by an interval spanning zero is
-    /// undefined in standard interval arithmetic).
+    /// undefined in standard interval arithmetic). Use [`Interval::checked_div`]
+    /// to get `None` instead.
     fn div(self, rhs: Self) -> Self {
-        assert!(
-            !rhs.contains(&Rational::zero()),
-            "Interval division by an interval containing zero"
-        );
-        let recip = Interval::new(rhs.lo.recip(), rhs.hi.recip());
-        self * recip
+        match self.checked_div(&rhs) {
+            Some(quotient) => quotient,
+            None => panic!("Interval division by an interval containing zero"),
+        }
     }
 }
 
@@ -243,25 +302,6 @@ impl Div for Interval {
 impl fmt::Display for Interval {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[{}, {}]", self.lo, self.hi)
-    }
-}
-
-// ── Helpers for Rational ──────────────────────────────────────────────────────
-
-impl Rational {
-    fn min(self, other: Self) -> Self {
-        if self <= other {
-            self
-        } else {
-            other
-        }
-    }
-    fn max(self, other: Self) -> Self {
-        if self >= other {
-            self
-        } else {
-            other
-        }
     }
 }
 
@@ -301,6 +341,62 @@ mod tests {
         let b = -a;
         assert_eq!(b.lo(), &r(-3, 4));
         assert_eq!(b.hi(), &r(-1, 4));
+    }
+
+    #[test]
+    fn division_by_positive_interval() {
+        // [1,2] / [2,4] = [1,2] * [1/4,1/2] = [1/4, 1]
+        let c = Interval::new(r(1, 1), r(2, 1)) / Interval::new(r(2, 1), r(4, 1));
+        assert_eq!(c.lo(), &r(1, 4));
+        assert_eq!(c.hi(), &r(1, 1));
+    }
+
+    #[test]
+    fn division_by_negative_interval() {
+        // [1,2] / [-4,-2] = [1,2] * [-1/2,-1/4] = [-1, -1/4]
+        let c = Interval::new(r(1, 1), r(2, 1)) / Interval::new(r(-4, 1), r(-2, 1));
+        assert_eq!(c.lo(), &r(-1, 1));
+        assert_eq!(c.hi(), &r(-1, 4));
+    }
+
+    #[test]
+    fn division_by_point_interval() {
+        let c = Interval::new(r(1, 1), r(3, 1)) / Interval::point(r(2, 1));
+        assert_eq!(c.lo(), &r(1, 2));
+        assert_eq!(c.hi(), &r(3, 2));
+    }
+
+    #[test]
+    #[should_panic(expected = "containing zero")]
+    fn division_by_zero_straddling_interval_panics() {
+        let _ = Interval::point(r(1, 1)) / Interval::new(r(-1, 1), r(1, 1));
+    }
+
+    #[test]
+    fn round_outward_contains_original() {
+        let x = Interval::new(r(-1, 3), r(2, 7));
+        let rounded = x.round_outward(8);
+        assert!(rounded.contains_interval(&x));
+        // Bounds are multiples of 1/256, i.e. 256 times a bound is an integer.
+        let scale = Rational::from(256);
+        let one = BigInt::from(1);
+        assert_eq!((rounded.lo().clone() * scale.clone()).denom(), &one);
+        assert_eq!((rounded.hi().clone() * scale).denom(), &one);
+    }
+
+    #[test]
+    fn checked_div_returns_none_for_zero_straddling_divisor() {
+        let x = Interval::new(r(1, 1), r(2, 1));
+        assert!(x.checked_div(&Interval::new(r(-1, 1), r(1, 1))).is_none());
+        assert!(x.checked_div(&Interval::new(r(0, 1), r(1, 1))).is_none());
+        assert!(x.checked_div(&Interval::new(r(-1, 1), r(0, 1))).is_none());
+    }
+
+    #[test]
+    fn checked_div_matches_operator_when_defined() {
+        let x = Interval::new(r(1, 1), r(2, 1));
+        let y = Interval::new(r(-4, 1), r(-2, 1));
+        assert_eq!(x.checked_div(&y), Some(x.clone() / y));
     }
 
     #[test]

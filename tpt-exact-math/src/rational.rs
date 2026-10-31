@@ -198,9 +198,67 @@ impl Rational {
     /// ```
     pub fn to_f64(&self) -> f64 {
         use num_traits::ToPrimitive;
-        let n = self.numer.to_f64().unwrap_or(f64::NAN);
-        let d = self.denom.to_f64().unwrap_or(f64::NAN);
-        n / d
+        if self.numer.is_zero() {
+            return 0.0;
+        }
+        // Rescale so the integer quotient carries about 64 significant bits.
+        // Converting the raw numerator and denominator first overflows to
+        // infinity (and then NaN) once either one exceeds the `f64` range.
+        let shift = 64 - (self.numer.bits() as i64 - self.denom.bits() as i64);
+        let quotient = if shift >= 0 {
+            (&self.numer << shift as usize) / &self.denom
+        } else {
+            &self.numer / (&self.denom << (-shift) as usize)
+        };
+        let q = quotient.to_f64().unwrap_or(f64::NAN);
+        scale_by_pow2(q, -shift)
+    }
+
+    /// Returns `self` as an `i64` if it is an integer in range, otherwise `None`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use tpt_exact_math::Rational;
+    ///
+    /// assert_eq!(Rational::from_frac(6, 3).to_i64(), Some(2));
+    /// assert_eq!(Rational::from_frac(1, 3).to_i64(), None);
+    /// ```
+    pub fn to_i64(&self) -> Option<i64> {
+        use num_traits::ToPrimitive;
+        if self.denom == BigInt::one() {
+            self.numer.to_i64()
+        } else {
+            None
+        }
+    }
+
+    /// Returns the largest integer that is less than or equal to `self`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use tpt_exact_math::Rational;
+    ///
+    /// assert_eq!(Rational::from_frac(7, 2).floor(), Rational::from_frac(3, 1));
+    /// assert_eq!(Rational::from_frac(-7, 2).floor(), Rational::from_frac(-4, 1));
+    /// ```
+    pub fn floor(&self) -> Rational {
+        Self::from(self.numer.div_floor(&self.denom))
+    }
+
+    /// Returns the smallest integer that is greater than or equal to `self`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use tpt_exact_math::Rational;
+    ///
+    /// assert_eq!(Rational::from_frac(7, 2).ceil(), Rational::from_frac(4, 1));
+    /// assert_eq!(Rational::from_frac(-7, 2).ceil(), Rational::from_frac(-3, 1));
+    /// ```
+    pub fn ceil(&self) -> Rational {
+        Self::from(-(-&self.numer).div_floor(&self.denom))
     }
 
     fn reduce(numer: BigInt, denom: BigInt) -> Self {
@@ -222,6 +280,22 @@ impl Rational {
             denom: denom / &g,
         }
     }
+}
+
+/// Multiplies `x` by `2^e` without `f64::powi`, which is unavailable under
+/// `no_std`. Each step multiplies by an exactly representable power of two, so
+/// rounding only happens on overflow or underflow.
+fn scale_by_pow2(mut x: f64, mut e: i64) -> f64 {
+    const CHUNK: i64 = 1000;
+    while e > CHUNK {
+        x *= f64::from_bits(((1023 + CHUNK) as u64) << 52);
+        e -= CHUNK;
+    }
+    while e < -CHUNK {
+        x *= f64::from_bits(((1023 - CHUNK) as u64) << 52);
+        e += CHUNK;
+    }
+    x * f64::from_bits(((1023 + e) as u64) << 52)
 }
 
 // ── From conversions ──────────────────────────────────────────────────────────
@@ -438,6 +512,125 @@ mod tests {
         let a = Rational::from_frac(3, 7);
         let b = a.clone().recip();
         assert_eq!(a * b, Rational::one());
+    }
+
+    #[test]
+    fn floor_and_ceil_round_toward_the_right_integers() {
+        assert_eq!(Rational::from_frac(7, 2).floor(), Rational::from(3));
+        assert_eq!(Rational::from_frac(7, 2).ceil(), Rational::from(4));
+        assert_eq!(Rational::from_frac(-7, 2).floor(), Rational::from(-4));
+        assert_eq!(Rational::from_frac(-7, 2).ceil(), Rational::from(-3));
+        assert_eq!(Rational::from(5).floor(), Rational::from(5));
+        assert_eq!(Rational::from(5).ceil(), Rational::from(5));
+    }
+
+    fn big_power_of_ten(exp: u32) -> BigInt {
+        BigInt::from(10).pow(exp)
+    }
+
+    #[test]
+    fn big_values_stay_exact() {
+        // (10^400 + 1) / 10^400 is exactly 1 + 1/10^400.
+        let ten_400 = big_power_of_ten(400);
+        let r = Rational::new(&ten_400 + BigInt::one(), ten_400.clone());
+        assert_eq!(
+            r.clone() - Rational::one(),
+            Rational::new(BigInt::one(), ten_400.clone())
+        );
+        assert_eq!(
+            r.clone() * Rational::from(ten_400.clone()),
+            Rational::from(&ten_400 + BigInt::one())
+        );
+    }
+
+    #[test]
+    fn big_values_reduce() {
+        // 2^200 * 3 / (2^200 * 9) = 1/3
+        let two_200 = BigInt::from(2).pow(200);
+        let r = Rational::new(&two_200 * BigInt::from(3), &two_200 * BigInt::from(9));
+        assert_eq!(r, Rational::from_frac(1, 3));
+    }
+
+    #[test]
+    fn to_f64_handles_values_beyond_f64_range() {
+        // Both operands overflow f64 individually; the quotient is still 2.
+        let r = Rational::new(BigInt::from(2).pow(1100), BigInt::from(2).pow(1099));
+        assert_eq!(r.to_f64(), 2.0);
+
+        // 10^400 / (3 * 10^400) ≈ 1/3, not NaN.
+        let ten_400 = big_power_of_ten(400);
+        let third = Rational::new(ten_400.clone(), &ten_400 * BigInt::from(3));
+        assert!((third.to_f64() - 1.0 / 3.0).abs() < 1e-15);
+    }
+
+    #[test]
+    fn to_f64_handles_tiny_and_negative_values() {
+        let tiny = Rational::new(BigInt::one(), BigInt::from(2).pow(1100));
+        assert_eq!(tiny.to_f64(), 0.0);
+
+        let neg = Rational::new(BigInt::from(-3), big_power_of_ten(300));
+        let expected = -3.0e-300;
+        assert!((neg.to_f64() - expected).abs() / expected.abs() < 1e-12);
+
+        assert_eq!(Rational::zero().to_f64(), 0.0);
+    }
+
+    #[test]
+    fn recip_of_negative_moves_sign_to_numerator() {
+        let r = Rational::from_frac(-3, 4);
+        let inv = r.recip();
+        assert_eq!(inv, Rational::from_frac(-4, 3));
+        assert!(inv.denom().sign() == Sign::Plus);
+        assert_eq!(r * inv, Rational::one());
+    }
+
+    #[test]
+    fn negative_times_negative_is_positive() {
+        let a = Rational::from_frac(-2, 3);
+        let b = Rational::from_frac(-9, 4);
+        assert_eq!(a * b, Rational::from_frac(3, 2));
+    }
+
+    #[test]
+    fn equal_values_hash_and_order_alike() {
+        use core::hash::{Hash, Hasher};
+
+        // Hasher stub: folds written bytes so equal inputs hash equally.
+        struct Fnv(u64);
+        impl Hasher for Fnv {
+            fn finish(&self) -> u64 {
+                self.0
+            }
+            fn write(&mut self, bytes: &[u8]) {
+                for b in bytes {
+                    self.0 = (self.0 ^ u64::from(*b)).wrapping_mul(0x100_0000_01b3);
+                }
+            }
+        }
+        fn hash_of(r: &Rational) -> u64 {
+            let mut h = Fnv(0xcbf2_9ce4_8422_2325);
+            r.hash(&mut h);
+            h.finish()
+        }
+
+        let a = Rational::from_frac(2, 4);
+        let b = Rational::from_frac(-3, -6);
+        let c = Rational::from_frac(1, 2);
+        assert_eq!(a, c);
+        assert_eq!(b, c);
+        assert_eq!(hash_of(&a), hash_of(&c));
+        assert_eq!(hash_of(&b), hash_of(&c));
+        assert_eq!(a.cmp(&c), core::cmp::Ordering::Equal);
+        assert_eq!(a.cmp(&b), core::cmp::Ordering::Equal);
+    }
+
+    #[test]
+    fn ordering_with_huge_denominators() {
+        let big = big_power_of_ten(50);
+        let lo = Rational::new(BigInt::from(1), &big + BigInt::one());
+        let hi = Rational::new(BigInt::from(1), big.clone());
+        assert!(lo < hi);
+        assert!(Rational::from_frac(-1, 1) < lo);
     }
 
     #[test]
