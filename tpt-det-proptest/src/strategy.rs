@@ -5,7 +5,7 @@ use crate::rng::Xorshift64;
 /// A deterministic seed for a property-test run.
 ///
 /// Two runs with the same [`Seed`] produce the same generated sequence and the
-/// same shrinking path.
+/// same shrinking path. Every value is a valid seed, including `0`.
 ///
 /// # Example
 ///
@@ -31,8 +31,8 @@ impl Default for Seed {
 /// Implementations must be deterministic: the same RNG state yields the same
 /// value.
 ///
-/// Strategies that support shrinking (such as [`IntRange`]) additionally expose
-/// an ordered index space so the runner can bisect toward a minimal
+/// Strategies that support shrinking (such as [`IntRange`]) also expose an
+/// ordered index space. The runner uses it to bisect toward a smaller
 /// counterexample.
 pub trait Strategy {
     /// The type of value produced by this strategy.
@@ -41,23 +41,33 @@ pub trait Strategy {
     /// Draws the next value from `rng`.
     fn generate(&self, rng: &mut Xorshift64) -> Self::Value;
 
-    /// Returns the inclusive-lower / exclusive-upper bounds of the strategy's
-    /// index space, if it supports bisection shrinking. `None` otherwise.
-    fn shrink_bounds(&self) -> Option<(u64, u64)> {
+    /// Returns the inclusive `(first, last)` bounds of the strategy's index
+    /// space, if it supports bisection shrinking. `None` otherwise.
+    fn shrink_bounds(&self) -> Option<(u128, u128)> {
+        None
+    }
+
+    /// Returns the index of `value` within the index space, if it has one.
+    /// Only meaningful when [`shrink_bounds`](Strategy::shrink_bounds) is `Some`.
+    fn index_of(&self, _value: &Self::Value) -> Option<u128> {
         None
     }
 
     /// Materialises the value at index `idx` within the strategy's index space.
     /// Only meaningful when [`shrink_bounds`](Strategy::shrink_bounds) is `Some`.
-    fn at_index(&self, _idx: u64) -> Option<Self::Value> {
+    fn at_index(&self, _idx: u128) -> Option<Self::Value> {
         None
     }
 }
 
-/// Generates integers uniformly in the half-open range `[low, high)`.
+/// Generates integers uniformly over a range.
 ///
-/// Works for any integer type that can be converted to/from `u64`. For ranges
-/// wider than `u64` a panic panic occurs; the provided tests use small ranges.
+/// Supports every primitive integer type: `i8`–`i128`, `u8`–`u128`, `isize`
+/// and `usize`. The `usize` and `isize` ranges depend on the target's pointer
+/// width, so they are reproducible only across platforms of the same width.
+///
+/// Use [`IntRange::new`] for a half-open range `[low, high)` and
+/// [`IntRange::inclusive`] for a closed range `[low, high]`.
 ///
 /// # Example
 ///
@@ -68,71 +78,82 @@ pub trait Strategy {
 /// let mut rng = Xorshift64::new(Seed::default().0);
 /// let v = strat.generate(&mut rng);
 /// assert!((0..5).contains(&v));
+///
+/// // Closed range that includes the maximum value.
+/// let full = IntRange::<u8>::inclusive(0, u8::MAX);
+/// assert_eq!(full.at_index(255), Some(u8::MAX));
 /// ```
 #[derive(Clone, Copy, Debug)]
 pub struct IntRange<T> {
-    low_u64: u64,
-    high_u64: u64,
+    /// Smallest index, that is `low` under the order-preserving mapping.
+    first: u128,
+    /// Largest index, inclusive.
+    last: u128,
     _marker: core::marker::PhantomData<T>,
 }
 
-impl<T> IntRange<T> {
-    /// Creates a strategy generating values in `[low, high)`.
+impl<T: IntConvert + PartialOrd> IntRange<T> {
+    /// Creates a strategy generating values in the half-open range `[low, high)`.
     ///
     /// # Panics
     ///
-    /// Panics if `low >= high` or if the range spans more than `u64::MAX`
-    /// representable values.
-    pub fn new(low: T, high: T) -> Self
-    where
-        T: Copy + PartialOrd,
-        T: IntConvert,
-    {
+    /// Panics if `low >= high`.
+    pub fn new(low: T, high: T) -> Self {
         assert!(low < high, "IntRange requires low < high");
-        let low_u64 = low.to_u64();
-        let high_u64 = high.to_u64();
-        assert!(
-            high_u64 > low_u64,
-            "IntRange span too wide for u64 index space"
-        );
+        Self::from_indices(low.to_u128(), high.to_u128() - 1)
+    }
+
+    /// Creates a strategy generating values in the closed range `[low, high]`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `low > high`.
+    pub fn inclusive(low: T, high: T) -> Self {
+        assert!(low <= high, "IntRange requires low <= high");
+        Self::from_indices(low.to_u128(), high.to_u128())
+    }
+
+    fn from_indices(first: u128, last: u128) -> Self {
         Self {
-            low_u64,
-            high_u64,
+            first,
+            last,
             _marker: core::marker::PhantomData,
         }
     }
 }
 
-/// Trait mapping an integer type to/from `u64` for indexing. Implemented for all
-/// primitive integer types. Not part of the public surface beyond `IntRange`.
-pub trait IntConvert {
-    /// Converts `self` to `u64` under an **order-preserving** bijection, so that
-    /// `a < b` implies `a.to_u64() < b.to_u64()`.
-    fn to_u64(self) -> u64;
-    /// Inverse of [`to_u64`](IntConvert::to_u64).
-    fn from_u64(v: u64) -> Self;
+/// Maps an integer type to and from `u128` for indexing.
+///
+/// The mapping is an **order-preserving bijection**: `a < b` implies
+/// `a.to_u128() < b.to_u128()`. Implemented for every primitive integer type.
+/// Not part of the public surface beyond [`IntRange`].
+pub trait IntConvert: Copy {
+    /// Converts `self` to `u128` under the order-preserving bijection.
+    fn to_u128(self) -> u128;
+    /// Inverse of [`to_u128`](IntConvert::to_u128).
+    fn from_u128(v: u128) -> Self;
 }
 
-const SIGN_FLIP: u64 = 0x8000_0000_0000_0000;
+/// Flipping this bit maps two's-complement order onto unsigned order.
+const SIGN_FLIP: u128 = 1 << 127;
 
 macro_rules! impl_int_convert {
     ($t:ty, signed) => {
         impl IntConvert for $t {
-            fn to_u64(self) -> u64 {
-                // Two's-complement order-preserving bijection to unsigned.
-                (self as i64 as u64) ^ SIGN_FLIP
+            fn to_u128(self) -> u128 {
+                (self as i128 as u128) ^ SIGN_FLIP
             }
-            fn from_u64(v: u64) -> Self {
-                ((v ^ SIGN_FLIP) as i64) as $t
+            fn from_u128(v: u128) -> Self {
+                ((v ^ SIGN_FLIP) as i128) as $t
             }
         }
     };
     ($t:ty, unsigned) => {
         impl IntConvert for $t {
-            fn to_u64(self) -> u64 {
-                self as u64
+            fn to_u128(self) -> u128 {
+                self as u128
             }
-            fn from_u64(v: u64) -> Self {
+            fn from_u128(v: u128) -> Self {
                 v as $t
             }
         }
@@ -142,10 +163,14 @@ impl_int_convert!(i8, signed);
 impl_int_convert!(i16, signed);
 impl_int_convert!(i32, signed);
 impl_int_convert!(i64, signed);
+impl_int_convert!(i128, signed);
+impl_int_convert!(isize, signed);
 impl_int_convert!(u8, unsigned);
 impl_int_convert!(u16, unsigned);
 impl_int_convert!(u32, unsigned);
 impl_int_convert!(u64, unsigned);
+impl_int_convert!(u128, unsigned);
+impl_int_convert!(usize, unsigned);
 
 macro_rules! impl_int_range {
     ($t:ty) => {
@@ -153,20 +178,29 @@ macro_rules! impl_int_range {
             type Value = $t;
 
             fn generate(&self, rng: &mut Xorshift64) -> $t {
-                let span = self.high_u64 - self.low_u64;
-                let idx = rng.next_u64() % span;
-                <$t as IntConvert>::from_u64(self.low_u64 + idx)
+                // `last - first` is the span minus one. Only the full u128 range
+                // has span 2^128, which does not fit in u128 and needs a raw draw.
+                let offset = match self.last - self.first {
+                    u128::MAX => rng.next_u128(),
+                    span => rng.next_below(span + 1),
+                };
+                <$t as IntConvert>::from_u128(self.first + offset)
             }
 
-            fn shrink_bounds(&self) -> Option<(u64, u64)> {
-                Some((self.low_u64, self.high_u64))
+            fn shrink_bounds(&self) -> Option<(u128, u128)> {
+                Some((self.first, self.last))
             }
 
-            fn at_index(&self, idx: u64) -> Option<Self::Value> {
-                if idx >= self.high_u64 {
-                    None
+            fn index_of(&self, value: &$t) -> Option<u128> {
+                let idx = <$t as IntConvert>::to_u128(*value);
+                (self.first..=self.last).contains(&idx).then_some(idx)
+            }
+
+            fn at_index(&self, idx: u128) -> Option<$t> {
+                if (self.first..=self.last).contains(&idx) {
+                    Some(<$t as IntConvert>::from_u128(idx))
                 } else {
-                    Some(<$t as IntConvert>::from_u64(idx))
+                    None
                 }
             }
         }
@@ -177,12 +211,19 @@ impl_int_range!(i8);
 impl_int_range!(i16);
 impl_int_range!(i32);
 impl_int_range!(i64);
+impl_int_range!(i128);
+impl_int_range!(isize);
 impl_int_range!(u8);
 impl_int_range!(u16);
 impl_int_range!(u32);
 impl_int_range!(u64);
+impl_int_range!(u128);
+impl_int_range!(usize);
 
 /// Generates boolean values (`true`/`false`), each equally likely.
+///
+/// Uses the top bit of the RNG output, which is the highest-quality bit of
+/// xorshift output.
 ///
 /// # Example
 ///
@@ -200,6 +241,6 @@ impl Strategy for AnyBool {
     type Value = bool;
 
     fn generate(&self, rng: &mut Xorshift64) -> bool {
-        (rng.next_u64() & 1) == 1
+        (rng.next_u64() >> 63) == 1
     }
 }

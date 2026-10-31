@@ -26,14 +26,20 @@
 
 #![no_std]
 #![deny(missing_docs)]
+#![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/tpt-det-proptest/0.1.0/")]
 
 extern crate alloc;
 
 mod check;
+mod combinators;
 mod rng;
 mod strategy;
 
 pub use check::{check, CounterExample, TestResult};
+pub use combinators::{
+    one_of, optional, vec_of, Filter, Map, OneOf, Optional, StrategyExt, VecOf,
+    MAX_FILTER_REJECTIONS,
+};
 pub use rng::Xorshift64;
 pub use strategy::{AnyBool, IntRange, Seed, Strategy};

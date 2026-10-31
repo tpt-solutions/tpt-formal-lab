@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/tpt-det-proptest.svg)](https://crates.io/crates/tpt-det-proptest)
 [![docs.rs](https://docs.rs/tpt-det-proptest/badge.svg)](https://docs.rs/tpt-det-proptest)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](../LICENSE-MIT)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
 Deterministic property-based testing with a fixed-seed PRNG and bisection shrinking.
 
