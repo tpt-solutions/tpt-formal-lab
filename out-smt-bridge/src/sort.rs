@@ -22,6 +22,8 @@ pub enum Sort {
     Real,
     /// Bit-vector sort of given width in bits (`(_ BitVec N)`).
     BitVec(u32),
+    /// Unicode string sort (`String`).
+    String,
     /// Array sort from a domain to a range (`(Array D R)`).
     Array(Box<Sort>, Box<Sort>),
 }
@@ -36,6 +38,7 @@ impl Sort {
     ///
     /// assert_eq!(Sort::Bool.to_smtlib2(), "Bool");
     /// assert_eq!(Sort::Real.to_smtlib2(), "Real");
+    /// assert_eq!(Sort::String.to_smtlib2(), "String");
     /// assert_eq!(Sort::BitVec(64).to_smtlib2(), "(_ BitVec 64)");
     /// let arr = Sort::Array(Box::new(Sort::Int), Box::new(Sort::Int));
     /// assert_eq!(arr.to_smtlib2(), "(Array Int Int)");
@@ -45,6 +48,7 @@ impl Sort {
             Sort::Bool => "Bool".into(),
             Sort::Int => "Int".into(),
             Sort::Real => "Real".into(),
+            Sort::String => "String".into(),
             Sort::BitVec(w) => format!("(_ BitVec {w})"),
             Sort::Array(d, r) => format!("(Array {} {})", d.to_smtlib2(), r.to_smtlib2()),
         }
@@ -66,8 +70,16 @@ mod tests {
         assert_eq!(Sort::Bool.to_smtlib2(), "Bool");
         assert_eq!(Sort::Int.to_smtlib2(), "Int");
         assert_eq!(Sort::Real.to_smtlib2(), "Real");
+        assert_eq!(Sort::String.to_smtlib2(), "String");
         assert_eq!(Sort::BitVec(8).to_smtlib2(), "(_ BitVec 8)");
         let arr = Sort::Array(Box::new(Sort::Int), Box::new(Sort::Bool));
         assert_eq!(arr.to_smtlib2(), "(Array Int Bool)");
+    }
+
+    #[test]
+    fn nested_array_sort() {
+        let inner = Sort::Array(Box::new(Sort::Int), Box::new(Sort::BitVec(8)));
+        let outer = Sort::Array(Box::new(Sort::Int), Box::new(inner));
+        assert_eq!(outer.to_smtlib2(), "(Array Int (Array Int (_ BitVec 8)))");
     }
 }

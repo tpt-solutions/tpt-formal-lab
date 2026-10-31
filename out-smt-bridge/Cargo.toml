@@ -11,7 +11,9 @@ keywords = ["smt", "z3", "formal-verification", "satisfiability", "smtlib"]
 categories = ["mathematics", "development-tools", "science"]
 documentation = "https://docs.rs/out-smt-bridge"
 readme = "README.md"
-exclude = ["/spec.txt", "/.github"]
 
 [dependencies]
 # pure Rust string builder — no external deps
+
+[lints]
+workspace = true

@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/out-smt-bridge.svg)](https://crates.io/crates/out-smt-bridge)
 [![docs.rs](https://docs.rs/out-smt-bridge/badge.svg)](https://docs.rs/out-smt-bridge)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](../LICENSE-MIT)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE-MIT)
 
 Ergonomic, zero-dependency Rust interface to SMT solvers.
 
@@ -43,7 +43,20 @@ println!("{}", solver.emit_check());
 // (assert (> y 0))
 // (assert (= (+ x y) 10))
 // (check-sat)
-// (get-model)
+```
+
+To run a solver and read the verdict in one step, use `check_sat`. It runs
+`z3 -in` (or any SMT-LIB2 program you name) with a timeout, and returns
+`SatResult::{Sat(model), Unsat, Unknown(reason)}`:
+
+```rust
+use std::time::Duration;
+use out_smt_bridge::{Backend, SatResult};
+
+match solver.check_sat(&Backend::Z3, Duration::from_secs(10))? {
+    SatResult::Sat(model) => println!("x = {:?}", model.get_int("x")),
+    other => println!("{other:?}"),
+}
 ```
 
 ## Parsing counterexamples

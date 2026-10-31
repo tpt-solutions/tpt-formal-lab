@@ -54,17 +54,20 @@
 //! ```
 
 #![deny(missing_docs)]
-#![deny(unsafe_code)]
+#![forbid(unsafe_code)]
 #![doc(html_root_url = "https://docs.rs/out-smt-bridge/0.1.0/")]
 
 mod counter_example;
 mod expr;
+mod result;
+mod sexpr;
 mod smtlib2;
 mod solver;
 mod sort;
 
 pub use counter_example::{CeValue, CounterExample};
 pub use expr::Expr;
-pub use smtlib2::emit_smtlib2;
-pub use solver::SmtSolver;
+pub use result::{parse_get_value, parse_unsat_core, Backend, SatResult, SolverError};
+pub use smtlib2::{emit_smtlib2, quote_symbol};
+pub use solver::{SmtSolver, SortError};
 pub use sort::Sort;
