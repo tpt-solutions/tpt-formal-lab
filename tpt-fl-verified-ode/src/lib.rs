@@ -54,6 +54,12 @@
 
 extern crate alloc;
 
+mod monitor;
 mod solver;
+mod taylor;
 
-pub use solver::{IntervalFn, OdeError, OdeSolver};
+pub use monitor::{audit_float_trajectory, float_rk4, Escape};
+pub use solver::{
+    IntervalFn, OdeError, OdeSolver, TaylorOdeSolver, VectorIntervalFn, VectorOdeSolver,
+};
+pub use taylor::{TaylorArith, TaylorFn};
