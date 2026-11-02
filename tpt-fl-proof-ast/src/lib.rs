@@ -69,7 +69,7 @@ mod expr;
 mod kinds;
 
 pub use builder::AstBuilder;
-pub use expr::{Binder, BinderSort, Expr, ExprNode};
+pub use expr::{ArithOp, Binder, BinderSort, CmpOp, Expr, ExprNode};
 pub use kinds::{Kind, PropKind, TermKind};
 
 /// A logical proposition (formula) — `Expr<PropKind>`.
