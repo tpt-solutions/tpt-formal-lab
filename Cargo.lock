@@ -248,6 +248,10 @@ version = "0.1.0"
 [[package]]
 name = "tpt-fl-redundancy"
 version = "0.1.0"
+dependencies = [
+ "tpt-fl-det-proptest",
+ "tpt-fl-deterministic-sim",
+]
 
 [[package]]
 name = "tpt-fl-smt-bridge"

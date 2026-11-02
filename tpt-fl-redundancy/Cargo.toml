@@ -18,3 +18,8 @@ readme = "README.md"
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+# Used by the TMR-in-simulation test only. This crate is `publish = false`.
+tpt-fl-deterministic-sim = { path = "../tpt-fl-deterministic-sim" }
+tpt-fl-det-proptest = { path = "../tpt-fl-det-proptest" }
