@@ -101,11 +101,16 @@ assert_eq!(channels.majority_vote().value(), Some(&10u32));
 ### Verified ODE integration — enclosures, not floats
 
 ```rust
-use tpt_fl_exact_math::Rational;
+use tpt_fl_exact_math::{Interval, Rational};
 use tpt_fl_verified_ode::OdeSolver;
 
-let mut solver = OdeSolver::new(|_t, y| y.clone(), Rational::from(0), Rational::from(1));
-let (lo, hi) = solver.step(&Rational::from_frac(1, 4)); // contains e^0.25
+// y' = y, y(0) = 1
+let mut solver = OdeSolver::new(
+    |_t: &Interval, y: &Interval| y.clone(),
+    Rational::from(0),
+    Rational::from(1),
+);
+let (lo, hi) = solver.step(&Rational::from_frac(1, 10)).unwrap(); // encloses e^0.1
 assert!(lo <= hi);
 ```
 
@@ -141,20 +146,24 @@ assert!(r.is_ok());
 
 ## Getting started
 
-Add the crates you need to your `Cargo.toml`:
+Add the crates you need to your `Cargo.toml`. The five crates on crates.io:
 
 ```toml
 [dependencies]
-tpt-fl-exact-math      = "0.1"
-tpt-fl-proof-ast       = "0.1"
-tpt-fl-verify-macros   = "0.1"
+tpt-fl-exact-math        = "0.1"
+tpt-fl-proof-ast         = "0.1"
+tpt-fl-verify-macros     = "0.1"
 tpt-fl-deterministic-sim = "0.1"
-tpt-fl-smt-bridge      = "0.1"
-tpt-fl-redundancy      = "0.1"
-tpt-fl-verified-ode    = "0.1"
-tpt-fl-trace-macros    = "0.1"
-tpt-fl-verified-algorithms = "0.1"
-tpt-fl-det-proptest    = "0.1"
+tpt-fl-smt-bridge        = "0.1"
+```
+
+The other five (`tpt-fl-redundancy`, `tpt-fl-verified-ode`, `tpt-fl-trace-macros`,
+`tpt-fl-verified-algorithms`, `tpt-fl-det-proptest`) are not yet published. Depend on
+them by path or git until they are:
+
+```toml
+[dependencies]
+tpt-fl-redundancy = { git = "https://github.com/tpt-solutions/tpt-formal-lab" }
 ```
 
 ## MSRV

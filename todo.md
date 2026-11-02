@@ -178,7 +178,7 @@
 - [x] `cargo publish --dry-run -p tpt-fl-proof-ast`
 - [x] `cargo publish --dry-run -p tpt-fl-verify-macros`
 - [ ] `cargo publish --dry-run -p tpt-fl-deterministic-sim` — packaging succeeds; the registry-lookup step for its `tpt-fl-exact-math` dependency can only be verified for real once `tpt-fl-exact-math` is actually published (dry-run can't see unpublished sibling crates)
-- [x] `cargo publish --dry-run -p tpt-fl-smt-bridge`
+- [ ] `cargo publish --dry-run -p tpt-fl-smt-bridge` — can only be verified once `tpt-fl-proof-ast` is on crates.io (smt-bridge now depends on it; Phase 19)
 - [ ] Tag git commit `v0.1.0`
 - [ ] `cargo publish -p tpt-fl-exact-math` → wait for index
 - [ ] `cargo publish -p tpt-fl-proof-ast` → wait for index
@@ -300,7 +300,7 @@
 - [x] `tpt-fl-redundancy`, `tpt-fl-verified-ode`, `tpt-fl-trace-macros`, `tpt-fl-verified-algorithms`, `tpt-fl-det-proptest`: `rust-version.workspace = true`, `keywords`, `categories`, `exclude` set in `Cargo.toml`
 - [x] `#![doc(html_root_url = ...)]` present on lib crates (`tpt-fl-trace-macros` is proc-macro-only and has no lib doc root, which is expected)
 - [x] Each crate's `README.md` has CI/license badges
-- [ ] Commit the working-tree changes for the 5 new crates + supporting edits to `Cargo.toml`/`README.md`/`CHANGELOG.md` (currently untracked/modified, not yet committed)
+- [x] Commit the working-tree changes for the 5 new crates + supporting edits to `Cargo.toml`/`README.md`/`CHANGELOG.md`
 - [x] Decide and record a publish plan for the 5 new crates (publish = false; see README and CHANGELOG) (currently intentionally excluded from the v0.1.0 batch — see note at top of this file)
 
 ---
@@ -404,7 +404,7 @@
 - [ ] CI: `cargo-semver-checks`; optional coverage (`cargo-llvm-cov`) — semver-checks needs a published baseline; not added yet
 - [x] CI: `continue-on-error` for nightly
 - [ ] Verify CI actually triggers on push to `master` — config checked; needs a real push to confirm
-- [ ] Commit `Cargo.lock` — no longer gitignored; the commit itself is pending
+- [x] Commit `Cargo.lock` — no longer gitignored; tracked in git
 - [x] `#![forbid(unsafe_code)]` in every crate (missing from det-proptest, verified-algorithms, verified-ode)
 - [x] `[workspace.lints]` section; extend `.clippy.toml` (e.g. `disallowed-methods` for determinism)
 - [x] `publish = false` on the 5 crates not in the v0.1.0 batch until a publish plan exists
@@ -422,23 +422,23 @@
 - [x] `tpt-fl-smt-bridge`: `check_sat()` spawning `z3 -in` / `cvc5 --lang smt2` with timeout and stderr capture (integration tests skip when solver absent)
 - [x] `tpt-fl-smt-bridge`: arrays (`select`/`store`), bitvector ops, strings (with escaping), function application, `let` sharing, `push`/`pop`, unsat cores, `get-value`
 - [x] `tpt-fl-smt-bridge`: optional sort checking (`sort_of` / `typecheck`)
-- [ ] `tpt-fl-proof-ast` → `tpt-fl-smt-bridge` bridge (`From<Formula>`), plus visitor, substitution, free-variable analysis, predicate/function application, sorted binders — visitor, substitution, free variables, function and predicate application, and sorted binders are done. The bridge is NOT done: it would make tpt-fl-proof-ast depend on tpt-fl-smt-bridge, which changes the publish order and the dry-run check (needs a decision).
+- [x] `tpt-fl-proof-ast` → `tpt-fl-smt-bridge` bridge: `from_proof_ast` lives in `tpt-fl-smt-bridge`, which depends on `tpt-fl-proof-ast` (publish order unchanged; smt-bridge is removed from the CI dry-run until proof-ast is published). Sorts for free variables come from a caller-supplied lookup. The bridge is not a `From` impl because the AST does not record variable sorts.
 - [x] `tpt-fl-deterministic-sim`: `SimContext` (step count, `dt`, spawn/despawn queues), state hashing, snapshot/restore, `FnMut` systems
 - [x] `tpt-fl-exact-math`: `FromStr`, `from_f64`, `pow`, `floor`/`ceil`/`round`, `&`-ref operator impls, wider `From<int>` impls, `Interval::{intersect, abs, sqr, pow, bisect}`
 - [x] `tpt-fl-redundancy`: `approx_vote` (float tolerance), faulty-channel report, `plurality_vote`
 - [x] `tpt-fl-verified-algorithms`: `sort_by` / `sort_by_key`, O(n log n) stable sort, Kani harnesses — Kani harnesses are written under `cfg(kani)` but not run (Kani is not installed here)
-- [ ] `tpt-fl-verified-ode`: vector systems, adaptive step size, higher-order (Taylor-model) enclosures — adaptive step size is done as `solve_until`. Vector systems and Taylor-model enclosures are NOT done.
+- [x] `tpt-fl-verified-ode`: vector systems (`VectorOdeSolver`), adaptive step size (`solve_until`), and higher-order Taylor-model enclosures (`TaylorOdeSolver`)
 - [x] `tpt-fl-det-proptest`: tuple / `Vec` / `Option` strategies and combinators (`map`, `filter`, `one_of`)
 
 ---
 
 ## Phase 20 — Innovation Ideas (candidates, not committed)
 
-- [ ] `tpt-assurance-case`: join `#[traces]`, contracts and verification results into a generated assurance case (GSN/SACM, traceability matrix); needs a `linkme`/`inventory` registry in `tpt-fl-trace-macros`
-- [ ] Contract lowering: `#[requires]`/`#[ensures]` also emit Kani/Prusti/Creusot attributes under `cfg`; optionally discharge simple arithmetic contracts via `tpt-fl-smt-bridge` + Z3 at test time
-- [ ] `DeterministicSim` record/replay: hash-chained step log, first-divergence bisection, golden-hash CI across x86/ARM/RISC-V (qemu)
-- [ ] Numerical monitor: run `tpt-fl-verified-ode` alongside a float integrator and flag steps where the float result leaves the rigorous enclosure
-- [ ] TMR-in-sim: `tpt-fl-redundancy` voters inside `DeterministicSim` with deterministic fault-injection schedules from `tpt-fl-det-proptest`
-- [ ] Stateful / model-based testing in `tpt-fl-det-proptest` (command sequences, printed replay seeds)
-- [ ] Proof certificates: keep Z3/cvc5 unsat proofs with tests; small independent checker for the exact-rational / interval fragment
-- [ ] Benchmarks backing the "existing crates are slow" claim in `spec.txt`
+- [~] `tpt-assurance-case`: **partly done** as an unpublished crate. It has a GSN-style Markdown rendering, a traceability matrix, and dangling/uncovered/failing checks, with evidence registered explicitly. Not done: automatic collection from `#[traces]` and contracts, and SACM output. Automatic collection needs a link-time registry (`linkme`/`inventory`), which is an external dependency, so it is left for a decision.
+- [ ] Contract lowering: deferred. Emitting `#[cfg_attr(kani, ...)]` cannot be tested here because Kani is not installed. Discharging contracts through Z3 needs a Rust-expression-to-SMT translator, which is a separate project.
+- [~] `DeterministicSim` record/replay: **partly done**. Hash-chained `StepLog`, `verify_log`, and bisection to the first divergence are in place. Not done: golden-hash CI across x86/ARM/RISC-V (qemu), which needs CI infrastructure.
+- [x] Numerical monitor: `audit_float_trajectory` and `float_rk4` in `tpt-fl-verified-ode`.
+- [x] TMR-in-sim: `tpt-fl-redundancy/tests/tmr_sim.rs`. It lives in the test suite because the redundancy crate is unpublished, so the simulator can't depend on it.
+- [x] Stateful / model-based testing in `tpt-fl-det-proptest` (`check_stateful`, `replay_run`).
+- [ ] Proof certificates: deferred. Z3 can emit proofs, but the independent checker is a substantial project of its own.
+- [ ] Benchmarks backing the "existing crates are slow" claim in `spec.txt`: deferred. Comparing against other crates needs external dev-dependencies and a benchmark harness, which is a decision for you.

@@ -57,6 +57,14 @@ publish plan exists (see `todo.md`, Phase 16).
 - `OdeError`, outward-rounded endpoints, and a Picard search that tightens the
   enclosure
 - `solve_until`: integrates to an exact end time, halving steps where needed
+- `VectorOdeSolver` and `VectorIntervalFn`: verified integration of vector systems,
+  with one enclosure per state component and a step verified for all components at once
+- `tpt-fl-verified-ode`: `TaylorOdeSolver` and `TaylorFn`/`TaylorArith`: Taylor-model integration of vector
+  systems. The right-hand side is written once and evaluated on intervals and on
+  Taylor models, which gives tighter enclosures than the Picard solver for smooth problems
+
+#### `tpt-fl-smt-bridge`
+- `from_proof_ast` converts `tpt-fl-proof-ast` formulas and terms to SMT expressions. The crate now depends on `tpt-fl-proof-ast`, so it publishes after it.
 
 #### `tpt-fl-deterministic-sim`
 - Checked and saturating arithmetic on `FixedPoint`
@@ -106,6 +114,13 @@ publish plan exists (see `todo.md`, Phase 16).
 - `sort_of` sort checking
 - `check_values` and `parse_get_value` for `(get-value ...)`
 - A real s-expression reader for solver output, with `i128` and `(- N)` support
+
+#### Phase 20 additions
+- `tpt-fl-deterministic-sim`: `StepLog` hash-chained record of a run, `step_logged` / `step_n_logged`, `verify_log` replay check, and `first_divergence` (bisection on the chain)
+- `tpt-fl-verified-ode`: `audit_float_trajectory` flags float states outside the verified enclosure, and `float_rk4` is a float integrator to audit
+- `tpt-fl-det-proptest`: `StateMachine`, `check_stateful`, and `replay_run` for model-based testing with greedy shrinking and replayable run seeds
+- `tpt-fl-redundancy`: TMR-in-simulation integration test (dev-dependencies only, so the crate stays unpublished)
+- `tpt-assurance-case` (new, unpublished): requirements, evidence and traceability with a GSN-style Markdown rendering. Evidence is registered explicitly, with no external dependency
 
 ### Fixed
 - `tpt-fl-exact-math`: `Interval` division by a non-point divisor (bounds were not
