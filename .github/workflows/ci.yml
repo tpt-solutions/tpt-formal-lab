@@ -121,10 +121,11 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       # Only crates with no unpublished workspace dependencies. tpt-fl-deterministic-sim
-      # depends on tpt-fl-exact-math through its optional `exact-math` feature, and a
-      # dry run cannot resolve that before tpt-fl-exact-math is on crates.io.
+      # depends on tpt-fl-exact-math through its optional `exact-math` feature, and
+      # tpt-fl-smt-bridge depends on tpt-fl-proof-ast for the AST conversion. A dry run
+      # cannot resolve either before the dependency is on crates.io. Add them back once
+      # the dependencies are published.
       - run: |
           cargo publish --dry-run -p tpt-fl-exact-math
           cargo publish --dry-run -p tpt-fl-proof-ast
           cargo publish --dry-run -p tpt-fl-verify-macros
-          cargo publish --dry-run -p tpt-fl-smt-bridge
