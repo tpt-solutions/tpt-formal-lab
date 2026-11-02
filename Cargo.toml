@@ -10,6 +10,7 @@ members = [
     "tpt-fl-trace-macros",
     "tpt-fl-verified-algorithms",
     "tpt-fl-det-proptest",
+    "tpt-assurance-case",
 ]
 resolver = "2"
 

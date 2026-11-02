@@ -1,0 +1,17 @@
+[package]
+name = "tpt-assurance-case"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Assembles requirements, tests, contracts and proofs into a GSN-style assurance case with a traceability matrix"
+publish = false
+
+[dependencies]
+# No external dependencies. Evidence is registered explicitly rather than
+# collected through a link-time registry.
+
+[lints]
+workspace = true
