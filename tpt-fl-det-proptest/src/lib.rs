@@ -34,6 +34,7 @@ extern crate alloc;
 mod check;
 mod combinators;
 mod rng;
+mod stateful;
 mod strategy;
 
 pub use check::{check, CounterExample, TestResult};
@@ -42,4 +43,5 @@ pub use combinators::{
     MAX_FILTER_REJECTIONS,
 };
 pub use rng::Xorshift64;
+pub use stateful::{check_stateful, replay_run, SequenceFailure, StateMachine};
 pub use strategy::{AnyBool, IntRange, Seed, Strategy};
