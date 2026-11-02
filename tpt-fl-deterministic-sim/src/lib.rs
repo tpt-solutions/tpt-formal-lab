@@ -51,7 +51,9 @@
 #![doc(html_root_url = "https://docs.rs/tpt-fl-deterministic-sim/0.1.0/")]
 
 mod fixed_point;
+mod replay;
 mod sim;
 
 pub use fixed_point::FixedPoint;
+pub use replay::{Divergence, LogEntry, StepLog};
 pub use sim::{DeterministicSim, Entities, EntityId, SimContext, Snapshot};
