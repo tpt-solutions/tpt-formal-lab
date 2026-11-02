@@ -13,7 +13,8 @@ documentation = "https://docs.rs/tpt-fl-smt-bridge"
 readme = "README.md"
 
 [dependencies]
-# pure Rust string builder — no external deps
+# Workspace crate only, so there are still no external dependencies.
+tpt-fl-proof-ast = { workspace = true }
 
 [lints]
 workspace = true

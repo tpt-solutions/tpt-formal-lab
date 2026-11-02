@@ -59,6 +59,7 @@
 
 mod counter_example;
 mod expr;
+mod proof_ast;
 mod result;
 mod sexpr;
 mod smtlib2;
@@ -67,6 +68,7 @@ mod sort;
 
 pub use counter_example::{CeValue, CounterExample};
 pub use expr::Expr;
+pub use proof_ast::{from_proof_ast, ConvertError};
 pub use result::{parse_get_value, parse_unsat_core, Backend, SatResult, SolverError};
 pub use smtlib2::{emit_smtlib2, quote_symbol};
 pub use solver::{SmtSolver, SortError};

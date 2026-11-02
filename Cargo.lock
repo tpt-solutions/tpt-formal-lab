@@ -256,6 +256,9 @@ dependencies = [
 [[package]]
 name = "tpt-fl-smt-bridge"
 version = "0.1.0"
+dependencies = [
+ "tpt-fl-proof-ast",
+]
 
 [[package]]
 name = "tpt-fl-trace-macros"
